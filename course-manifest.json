@@ -1,0 +1,229 @@
+{
+  "student": {
+    "name": "정기열",
+    "email": "luyig@naver.com",
+    "group": "하네스 엔지니어링 주말반",
+    "cohort": "1기"
+  },
+  "course": {
+    "title": "AI 완주반 6주 과정",
+    "currentWeek": 2,
+    "totalWeeks": 6
+  },
+  "weeks": [
+    {
+      "week": 1,
+      "materials": [
+        {
+          "id": "mat-w1-kyoan_pptx-ch1.pdf",
+          "type": "kyoan_pptx",
+          "title": "1강 교안 (PDF)",
+          "downloadUrl": "https://camp.scaila.kr/api/course/materials/mat-w1-kyoan_pptx-ch1.pdf/download",
+          "version": "v1"
+        }
+      ]
+    },
+    {
+      "week": 2,
+      "materials": [
+        {
+          "id": "mat-w2-kyoan_pptx-ch2.pdf",
+          "type": "kyoan_pptx",
+          "title": "2강 교안 PDF 미리보기",
+          "downloadUrl": "https://camp.scaila.kr/api/course/materials/mat-w2-kyoan_pptx-ch2.pdf/download",
+          "version": "v1"
+        },
+        {
+          "id": "mat-w2-kyoan_pptx-ch2-original.pptx",
+          "type": "kyoan_pptx",
+          "title": "2강 교안 원문PPTX",
+          "downloadUrl": "https://camp.scaila.kr/api/course/materials/mat-w2-kyoan_pptx-ch2-original.pptx/download",
+          "version": "v1"
+        },
+        {
+          "id": "mat-w2-practice_md-ch2-full-practice-guide.md",
+          "type": "practice_md",
+          "title": "2강 전체 실습 가이드",
+          "downloadUrl": "https://camp.scaila.kr/api/course/materials/mat-w2-practice_md-ch2-full-practice-guide.md/download",
+          "version": "v1"
+        },
+        {
+          "id": "mat-w2-practice_md-ch2-workspace-guide.md",
+          "type": "practice_md",
+          "title": "2강 작업공간 가이드",
+          "downloadUrl": "https://camp.scaila.kr/api/course/materials/mat-w2-practice_md-ch2-workspace-guide.md/download",
+          "version": "v1"
+        },
+        {
+          "id": "mat-w2-template_md-ch2-golden-data-template.md",
+          "type": "template_md",
+          "title": "2강 골든 데이터 템플릿",
+          "downloadUrl": "https://camp.scaila.kr/api/course/materials/mat-w2-template_md-ch2-golden-data-template.md/download",
+          "version": "v1"
+        },
+        {
+          "id": "mat-w2-template_md-ch2-gap-analysis-worksheet.md",
+          "type": "template_md",
+          "title": "2강 격차 분석 워크시트",
+          "downloadUrl": "https://camp.scaila.kr/api/course/materials/mat-w2-template_md-ch2-gap-analysis-worksheet.md/download",
+          "version": "v1"
+        },
+        {
+          "id": "mat-w2-command_cheatsheet-ch2-claude-md-example.md",
+          "type": "command_cheatsheet",
+          "title": "2강 CLAUDE.md 예시",
+          "downloadUrl": "https://camp.scaila.kr/api/course/materials/mat-w2-command_cheatsheet-ch2-claude-md-example.md/download",
+          "version": "v1"
+        },
+        {
+          "id": "mat-w2-template_md-ch2-workflow-map-template.md",
+          "type": "template_md",
+          "title": "2강 업무 순서도 템플릿",
+          "downloadUrl": "https://camp.scaila.kr/api/course/materials/mat-w2-template_md-ch2-workflow-map-template.md/download",
+          "version": "v1"
+        },
+        {
+          "id": "mat-w2-practice_md-ch2-github-repo-guide.md",
+          "type": "practice_md",
+          "title": "2강 GitHub 제출 가이드",
+          "downloadUrl": "https://camp.scaila.kr/api/course/materials/mat-w2-practice_md-ch2-github-repo-guide.md/download",
+          "version": "v1"
+        }
+      ]
+    },
+    {
+      "week": 3,
+      "materials": [
+        {
+          "id": "mat-w3-lecture_pptx-ch3-edu.pptx",
+          "type": "lecture_pptx",
+          "title": "3강 강의자료 PPT",
+          "downloadUrl": "https://camp.scaila.kr/api/course/materials/mat-w3-lecture_pptx-ch3-edu.pptx/download",
+          "version": "v1"
+        },
+        {
+          "id": "mat-w3-kyoan_pptx-ch3-kyoan.pptx",
+          "type": "kyoan_pptx",
+          "title": "3강 학생용 교안 PPT",
+          "downloadUrl": "https://camp.scaila.kr/api/course/materials/mat-w3-kyoan_pptx-ch3-kyoan.pptx/download",
+          "version": "v1"
+        },
+        {
+          "id": "mat-w3-practice_md-ch3-full-practice-guide.md",
+          "type": "practice_md",
+          "title": "3강 실습 가이드",
+          "downloadUrl": "https://camp.scaila.kr/api/course/materials/mat-w3-practice_md-ch3-full-practice-guide.md/download",
+          "version": "v1"
+        }
+      ]
+    },
+    {
+      "week": 4,
+      "materials": [
+        {
+          "id": "mat-w4-lecture_pptx-ch4-edu.pptx",
+          "type": "lecture_pptx",
+          "title": "4강 강의자료 PPT",
+          "downloadUrl": "https://camp.scaila.kr/api/course/materials/mat-w4-lecture_pptx-ch4-edu.pptx/download",
+          "version": "v1"
+        },
+        {
+          "id": "mat-w4-kyoan_pptx-ch4-kyoan.pptx",
+          "type": "kyoan_pptx",
+          "title": "4강 학생용 교안 PPT",
+          "downloadUrl": "https://camp.scaila.kr/api/course/materials/mat-w4-kyoan_pptx-ch4-kyoan.pptx/download",
+          "version": "v1"
+        },
+        {
+          "id": "mat-w4-practice_md-ch4-full-practice-guide.md",
+          "type": "practice_md",
+          "title": "4강 실습 가이드",
+          "downloadUrl": "https://camp.scaila.kr/api/course/materials/mat-w4-practice_md-ch4-full-practice-guide.md/download",
+          "version": "v1"
+        }
+      ]
+    },
+    {
+      "week": 5,
+      "materials": [
+        {
+          "id": "mat-w5-lecture_pptx-ch5-edu.pptx",
+          "type": "lecture_pptx",
+          "title": "5강 강의자료 PPT",
+          "downloadUrl": "https://camp.scaila.kr/api/course/materials/mat-w5-lecture_pptx-ch5-edu.pptx/download",
+          "version": "v1"
+        },
+        {
+          "id": "mat-w5-kyoan_pptx-ch5-kyoan.pptx",
+          "type": "kyoan_pptx",
+          "title": "5강 학생용 교안 PPT",
+          "downloadUrl": "https://camp.scaila.kr/api/course/materials/mat-w5-kyoan_pptx-ch5-kyoan.pptx/download",
+          "version": "v1"
+        },
+        {
+          "id": "mat-w5-practice_md-ch5-full-practice-guide.md",
+          "type": "practice_md",
+          "title": "5강 실습 가이드",
+          "downloadUrl": "https://camp.scaila.kr/api/course/materials/mat-w5-practice_md-ch5-full-practice-guide.md/download",
+          "version": "v1"
+        }
+      ]
+    },
+    {
+      "week": 6,
+      "materials": [
+        {
+          "id": "mat-w6-lecture_pptx-ch6-edu.pptx",
+          "type": "lecture_pptx",
+          "title": "6강 강의자료 PPT",
+          "downloadUrl": "https://camp.scaila.kr/api/course/materials/mat-w6-lecture_pptx-ch6-edu.pptx/download",
+          "version": "v1"
+        },
+        {
+          "id": "mat-w6-kyoan_pptx-ch6-kyoan.pptx",
+          "type": "kyoan_pptx",
+          "title": "6강 학생용 교안 PPT",
+          "downloadUrl": "https://camp.scaila.kr/api/course/materials/mat-w6-kyoan_pptx-ch6-kyoan.pptx/download",
+          "version": "v1"
+        },
+        {
+          "id": "mat-w6-practice_md-ch6-full-practice-guide.md",
+          "type": "practice_md",
+          "title": "6강 실습 가이드",
+          "downloadUrl": "https://camp.scaila.kr/api/course/materials/mat-w6-practice_md-ch6-full-practice-guide.md/download",
+          "version": "v1"
+        }
+      ]
+    }
+  ],
+  "api": {
+    "baseUrl": "https://camp.scaila.kr",
+    "bootstrap": "https://camp.scaila.kr/api/course/bootstrap",
+    "materials": "https://camp.scaila.kr/api/course/materials",
+    "assignments": "https://camp.scaila.kr/api/course/assignments",
+    "submissions": "https://camp.scaila.kr/api/course/submissions",
+    "events": "https://camp.scaila.kr/api/setup/events"
+  },
+  "finalDeliverables": [
+    {
+      "week": 4,
+      "id": "ch4-final",
+      "title": "내 업무 자동화 설계서"
+    },
+    {
+      "week": 5,
+      "id": "ch5-final",
+      "title": "팀 업무 개선안"
+    },
+    {
+      "week": 6,
+      "id": "ch6-api-spec",
+      "title": "API 서비스 기획서"
+    },
+    {
+      "week": 6,
+      "id": "ch6-codex-brief",
+      "title": "Codex 실행용 작업지시서"
+    }
+  ]
+}
