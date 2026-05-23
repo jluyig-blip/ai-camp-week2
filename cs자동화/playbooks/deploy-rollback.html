@@ -1,0 +1,53 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Playbook: deploy-rollback</title><link rel="stylesheet" href="./playbook.css"></head><body>
+<h1>Playbook · deploy-rollback</h1>
+<div class="meta">
+  <span class="tag high">severity: high</span>
+  <span class="tag group">deploy</span>
+  <span class="tag agent">deploy-gate-agent → orchestrator</span>
+  <span class="tag low">SLA: roll back within 10 min of the call</span>
+</div>
+<div class="card danger">
+  <strong>Summary</strong> — A deploy is live and causing user impact (or is about to).
+  Goal: get back to a known-good state fast, then diagnose calmly. Rolling back is
+  cheap; debugging in production is not.
+</div>
+
+<h2>Trigger</h2>
+<ul>
+  <li>monitor-agent or a person reports user impact correlated with a deploy that just shipped.</li>
+  <li>The deploy succeeded the gate but a smoke check / golden path is now failing in production.</li>
+  <li>A hotfix is being attempted but isn't ready and the bleeding is ongoing.</li>
+</ul>
+
+<h2>Decide: roll back, or roll forward?</h2>
+<div class="tree">is there active user impact?
+├─ yes, and a fix isn't &lt;10 min away  → ROLL BACK now, diagnose after
+├─ yes, but a 1-line revert fixes it    → roll forward with the revert (counts as incident-response)
+└─ no, just elevated errors / noisy logs → no rollback; open a normal task, watch the trend
+</div>
+
+<h2>How to roll back (fill in for your platform)</h2>
+<ol>
+  <li>Identify the last known-good release/deployment (check <code>data/runs/last-gate.json</code>, your hosting dashboard, or <code>git log</code> on the deploy branch).</li>
+  <li>Promote / redeploy that release.
+    <ul>
+      <li>Vercel: redeploy the previous deployment, or <code>vercel rollback &lt;url&gt;</code>.</li>
+      <li>Containers/k8s: re-deploy the previous image tag.</li>
+      <li>Plain git deploy: <code>git revert &lt;bad-commit&gt;</code> (don't force-push the branch) and let the pipeline ship it.</li>
+    </ul>
+  </li>
+  <li>If the bad deploy ran a forward database migration, roll the schema back too (or apply the down migration) — coordinate with backend-agent. <em>Never</em> leave the schema ahead of the code.</li>
+  <li>Confirm recovery: re-run the golden-path smoke check, watch the error rate fall.</li>
+  <li>Post the recovery notice in the incident channel.</li>
+</ol>
+
+<h2>After the rollback</h2>
+<ul>
+  <li>Within 1 hour: register the incident-response task (<code>metadata.source = "incident-response"</code>) describing what shipped, what broke, and the rollback.</li>
+  <li>Open a normal task to fix the underlying bug — it must re-pass the gate before re-shipping.</li>
+  <li>If the gate let a breaking change through, file a task to add the check that would have caught it.</li>
+  <li>Write a postmortem if there was user impact.</li>
+</ul>
+
+<div class="footer">trigger: post-deploy incident · owner: deploy-gate-agent / orchestrator</div>
+</body></html>

@@ -1,0 +1,28 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "doc": "Declarative anomaly rules. Each block maps a detector's signals to a severity + a routing target. The scheduler re-reads this on every sweep, so you can tune thresholds without a restart. Whether a detector actually runs is decided by config.js -> detectors (or the WATCH_ENABLED env var); the `enabled` flag here is only the fallback when neither is set.",
+    "_envHints": {
+      "sentry": ["SENTRY_AUTH_TOKEN", "SENTRY_ORG_SLUG", "SENTRY_PROJECT_SLUG"],
+      "vercel": ["VERCEL_TOKEN", "VERCEL_PROJECT_ID", "VERCEL_TEAM_ID"]
+    }
+  },
+  "rules": [
+    {
+      "detector": "sentry",
+      "enabled": false,
+      "signals": [
+        { "id": "error-rate-spike", "window": "1h", "metric": "error_rate", "threshold": "> 3x rolling baseline", "severity": "high", "routesTo": "frontend-agent", "note": "Error rate well above the rolling baseline — usually a regression from the last deploy." },
+        { "id": "new-issue-spike", "window": "1h", "metric": "new_issues", "threshold": "> 5 in window", "severity": "medium", "routesTo": "frontend-agent" },
+        { "id": "heartbeat", "window": "12h", "metric": "—", "threshold": "alive", "severity": "low", "routesTo": "orchestrator" }
+      ]
+    },
+    {
+      "detector": "vercel",
+      "enabled": false,
+      "signals": [
+        { "id": "deploy-failure", "window": "any", "metric": "build_state", "threshold": "= ERROR", "severity": "high", "routesTo": "deploy-gate-agent" }
+      ]
+    }
+  ]
+}

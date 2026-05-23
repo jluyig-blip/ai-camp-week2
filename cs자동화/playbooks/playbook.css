@@ -1,0 +1,26 @@
+:root{--bg:#fafafa;--card:#fff;--border:#e4e4e7;--text:#18181b;--text-2:#52525b;--text-3:#71717a;--accent:#059669;--high:#dc2626;--med:#d97706;--low:#71717a;--code-bg:#f4f4f5}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Pretendard Variable',Pretendard,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;padding:32px;max-width:920px;margin:0 auto;font-size:14px;letter-spacing:-0.005em}
+h1{font-size:24px;margin-bottom:8px;letter-spacing:-0.02em}
+h2{font-size:17px;margin-top:28px;margin-bottom:10px;border-bottom:2px solid var(--border);padding-bottom:6px}
+h3{font-size:14px;margin-top:18px;margin-bottom:8px;color:var(--text-2)}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.tag{padding:3px 10px;border-radius:9999px;font-size:11px;font-weight:700;font-family:'JetBrains Mono',ui-monospace,monospace;line-height:1.4}
+.tag.high{background:#fee2e2;color:var(--high)}
+.tag.medium{background:#fef3c7;color:var(--med)}
+.tag.low{background:#e4e4e7;color:var(--low)}
+.tag.agent{background:#d1fae5;color:#065f46}
+.tag.group{background:#dbeafe;color:#1e40af}
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px 18px;margin:10px 0}
+.card.danger{border-left:4px solid var(--high)}
+.card.warn{border-left:4px solid var(--med)}
+.card.ok{border-left:4px solid var(--accent)}
+ol,ul{margin-left:22px}
+li{margin:4px 0}
+code{background:var(--code-bg);padding:1px 6px;border-radius:3px;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12.5px}
+pre{background:var(--code-bg);padding:12px 14px;border-radius:6px;overflow-x:auto;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12.5px;line-height:1.5}
+.tree{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12px;background:var(--code-bg);padding:14px;border-radius:6px;white-space:pre-wrap}
+table{width:100%;border-collapse:collapse;margin:8px 0;font-size:13px}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--border)}
+th{font-weight:700;color:var(--text-2);font-size:11px;text-transform:uppercase;letter-spacing:0.04em}
+.footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--border);font-size:11px;color:var(--text-3);font-family:'JetBrains Mono',ui-monospace,monospace}

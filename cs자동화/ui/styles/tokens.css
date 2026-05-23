@@ -1,0 +1,291 @@
+/* ============================================================
+   agent-kanban-harness — design tokens (CSS custom properties)
+   Import this first, then kanban.css and progress.css.
+   Three themes ship: dark (default), navy, light. Override --token-* freely.
+   ============================================================ */
+
+/* ── Raw Design Tokens ─────────────────────────────────────── */
+:root {
+  /* Color / Neutral */
+  --token-neutral-50:  #fafafa;
+  --token-neutral-100: #f4f4f5;
+  --token-neutral-200: #e4e4e7;
+  --token-neutral-300: #d4d4d8;
+  --token-neutral-400: #a1a1aa;
+  --token-neutral-500: #71717a;
+  --token-neutral-600: #52525b;
+  --token-neutral-700: #3f3f46;
+  --token-neutral-800: #27272a;
+  --token-neutral-900: #18181b;
+
+  /* Color / Brand */
+  --token-brand-primary:       #18181b;
+  --token-brand-primary-hover: #27272a;
+  --token-brand-accent:        #059669;
+  --token-brand-accent-hover:  #047857;
+
+  /* Color / Status */
+  --token-status-generating-bg:  #dbeafe;
+  --token-status-generating-fg:  #1e40af;
+  --token-status-generating-dot: #3b82f6;
+
+  --token-status-validating-bg:  #fef3c7;
+  --token-status-validating-fg:  #92400e;
+  --token-status-validating-dot: #f59e0b;
+
+  --token-status-passed-bg:  #d1fae5;
+  --token-status-passed-fg:  #065f46;
+  --token-status-passed-dot: #10b981;
+
+  --token-status-flagged-bg:  #fee2e2;
+  --token-status-flagged-fg:  #991b1b;
+  --token-status-flagged-dot: #ef4444;
+
+  --token-status-regenerating-bg:  #fef3c7;
+  --token-status-regenerating-fg:  #92400e;
+  --token-status-regenerating-dot: #f59e0b;
+
+  --token-status-error-bg:  #fecaca;
+  --token-status-error-fg:  #7f1d1d;
+  --token-status-error-dot: #dc2626;
+
+  --token-status-idle-bg:  #e4e4e7;
+  --token-status-idle-fg:  #374151;
+  --token-status-idle-dot: #a1a1aa;
+
+  /* Color / Flag */
+  --token-flag-fact-bg:        #fee2e2;
+  --token-flag-fact-fg:        #991b1b;
+  --token-flag-schema-bg:      #fef3c7;
+  --token-flag-schema-fg:      #92400e;
+  --token-flag-borderline-bg:  #e0e7ff;
+  --token-flag-borderline-fg:  #3730a3;
+  --token-flag-sensitive-bg:   #fce7f3;
+  --token-flag-sensitive-fg:   #9d174d;
+  --token-flag-consistency-bg: #d1fae5;
+  --token-flag-consistency-fg: #065f46;
+
+  /* Color / Anchor */
+  --token-anchor-bg:     #fef3c7;
+  --token-anchor-border: #f59e0b;
+  --token-anchor-marker: #f59e0b;
+  --token-anchor-pulse:  #fde68a;
+
+  /* Color / Toast */
+  --token-toast-ok-bg:   #059669;
+  --token-toast-ok-fg:   #ffffff;
+  --token-toast-err-bg:  #dc2626;
+  --token-toast-err-fg:  #ffffff;
+  --token-toast-info-bg: #27272a;
+  --token-toast-info-fg: #ffffff;
+
+  /* Color / Severity */
+  --token-severity-high:   #dc2626;
+  --token-severity-mid:    #d97706;
+  --token-severity-low:    #71717a;
+
+  /* Typography */
+  --token-font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --token-font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+
+  --token-size-xs:   10px;
+  --token-size-sm:   11px;
+  --token-size-base: 12px;
+  --token-size-md:   13px;
+  --token-size-lg:   14px;
+  --token-size-xl:   16px;
+  --token-size-2xl:  20px;
+  --token-size-3xl:  24px;
+
+  --token-lh-tight:   1.25;
+  --token-lh-normal:  1.5;
+  --token-lh-relaxed: 1.7;
+
+  --token-ls-korean: -0.01em;
+
+  --token-weight-regular:  400;
+  --token-weight-medium:   500;
+  --token-weight-semibold: 600;
+  --token-weight-bold:     700;
+
+  /* Spacing */
+  --token-space-0:  0;
+  --token-space-1:  4px;
+  --token-space-2:  8px;
+  --token-space-3:  12px;
+  --token-space-4:  16px;
+  --token-space-5:  20px;
+  --token-space-6:  24px;
+  --token-space-8:  32px;
+  --token-space-10: 40px;
+  --token-space-12: 48px;
+  --token-space-16: 64px;
+
+  /* Radius */
+  --token-radius-sm:   4px;
+  --token-radius-md:   6px;
+  --token-radius-lg:   8px;
+  --token-radius-xl:   10px;
+  --token-radius-full: 9999px;
+
+  /* Shadow */
+  --token-shadow-none: none;
+  --token-shadow-sm:   0 1px 2px rgba(0,0,0,0.05);
+  --token-shadow-md:   0 2px 6px rgba(0,0,0,0.08);
+  --token-shadow-lg:   0 8px 24px rgba(0,0,0,0.12);
+
+  /* Motion */
+  --token-duration-instant: 0ms;
+  --token-duration-fast:    150ms;
+  --token-duration-normal:  250ms;
+  --token-duration-slow:    400ms;
+  --token-duration-pulse:   2000ms;
+
+  --token-ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --token-ease-in:      cubic-bezier(0.4, 0, 1, 1);
+  --token-ease-out:     cubic-bezier(0, 0, 0.2, 1);
+
+  /* Layout */
+  --token-sidebar-default: 240px;
+  --token-sidebar-min:     200px;
+  --token-sidebar-max:     400px;
+  --token-topbar-height:   56px;
+  --token-content-max:     1280px;
+
+  /* Z-index */
+  --token-z-base:       0;
+  --token-z-sticky:     10;
+  --token-z-divider:    50;
+  --token-z-overlay:    100;
+  --token-z-modal:      200;
+  --token-z-toast:      300;
+  --token-z-err-banner: 400;
+}
+
+/* ── Semantic Aliases — Dark Theme (default) ───────────────── */
+:root,
+[data-theme="dark"] {
+  --bg:      var(--token-neutral-900);   /* #18181b */
+  --s1:      #1f1f23;                    /* between 900 and 800 */
+  --s2:      var(--token-neutral-800);   /* #27272a */
+  --s3:      var(--token-neutral-700);   /* #3f3f46 */
+  --b1:      var(--token-neutral-700);   /* #3f3f46 */
+  --b2:      var(--token-neutral-600);   /* #52525b */
+  --t1:      var(--token-neutral-50);    /* #fafafa */
+  --t2:      var(--token-neutral-400);   /* #a1a1aa */
+  --t3:      var(--token-neutral-500);   /* #71717a */
+  --t4:      var(--token-neutral-600);   /* #52525b */
+  --ac:      var(--token-brand-accent);        /* #059669 */
+  --ac2:     var(--token-brand-accent-hover);  /* #047857 */
+  --gn:      var(--token-status-passed-dot);   /* #10b981 */
+  --rd:      var(--token-status-flagged-dot);  /* #ef4444 */
+  --am:      var(--token-status-validating-dot); /* #f59e0b */
+  --vl:      #8b5cf6;                    /* cross-val / violet */
+  --r:       var(--token-radius-md);     /* 6px */
+  --r-sm:    var(--token-radius-sm);     /* 4px */
+  --r-lg:    var(--token-radius-lg);     /* 8px */
+  --card-bg:    var(--token-neutral-800); /* #27272a */
+  --card-hover: var(--token-neutral-700); /* #3f3f46 */
+  --shadow-sm:  0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md:  0 2px 6px rgba(0,0,0,0.4);
+  --shadow-lg:  0 8px 24px rgba(0,0,0,0.5);
+
+  /* Status — dark surface adaptations */
+  --st-gen-bg:  #1e3a5f;
+  --st-gen-fg:  #93c5fd;
+  --st-gen-dot: var(--token-status-generating-dot);
+  --st-val-bg:  #3f2f0a;
+  --st-val-fg:  #fbbf24;
+  --st-val-dot: var(--token-status-validating-dot);
+  --st-pass-bg: #0a3d2e;
+  --st-pass-fg: #6ee7b7;
+  --st-pass-dot: var(--token-status-passed-dot);
+  --st-flag-bg: #3f1212;
+  --st-flag-fg: #fca5a5;
+  --st-flag-dot: var(--token-status-flagged-dot);
+  --st-idle-bg:  #27272a;
+  --st-idle-fg:  #a1a1aa;
+  --st-idle-dot: var(--token-status-idle-dot);
+}
+
+/* ── Navy Theme ────────────────────────────────────────────── */
+[data-theme="navy"] {
+  --bg:  #050A12;
+  --s1:  #0B1220;
+  --s2:  #101828;
+  --s3:  #162035;
+  --b1:  #1E2D45;
+  --b2:  #2A3F5F;
+  --t1:  #DDE5F0;
+  --t2:  #8899B0;
+  --t3:  #607088;
+  --t4:  #455570;
+  --ac:  #1A6FEF;
+  --ac2: #1558C0;
+  --gn:  #22C55E;
+  --rd:  #EF4444;
+  --am:  #C8A24A;
+  --vl:  #8B5CF6;
+  --card-bg:    #0F1B30;
+  --card-hover: #142440;
+  --shadow-sm:  0 1px 2px rgba(0,0,0,0.4);
+  --shadow-md:  0 2px 6px rgba(0,0,0,0.5);
+  --shadow-lg:  0 8px 24px rgba(0,0,0,0.6);
+
+  --st-gen-bg:  #0c1f3f;
+  --st-gen-fg:  #60a5fa;
+  --st-gen-dot: #3b82f6;
+  --st-val-bg:  #2a1f05;
+  --st-val-fg:  #fbbf24;
+  --st-val-dot: #f59e0b;
+  --st-pass-bg: #062a1e;
+  --st-pass-fg: #34d399;
+  --st-pass-dot:#10b981;
+  --st-flag-bg: #2a0808;
+  --st-flag-fg: #fca5a5;
+  --st-flag-dot:#ef4444;
+  --st-idle-bg: #111828;
+  --st-idle-fg: #8899B0;
+  --st-idle-dot:#455570;
+}
+
+/* ── Light Theme ───────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg:  var(--token-neutral-50);    /* #fafafa */
+  --s1:  #ffffff;
+  --s2:  var(--token-neutral-100);   /* #f4f4f5 */
+  --s3:  var(--token-neutral-200);   /* #e4e4e7 */
+  --b1:  var(--token-neutral-200);   /* #e4e4e7 */
+  --b2:  var(--token-neutral-300);   /* #d4d4d8 */
+  --t1:  var(--token-neutral-900);   /* #18181b */
+  --t2:  var(--token-neutral-600);   /* #52525b */
+  --t3:  var(--token-neutral-500);   /* #71717a */
+  --t4:  var(--token-neutral-400);   /* #a1a1aa */
+  --ac:  var(--token-brand-accent);        /* #059669 */
+  --ac2: var(--token-brand-accent-hover);  /* #047857 */
+  --gn:  #16A34A;
+  --rd:  #DC2626;
+  --am:  #D97706;
+  --vl:  #7C3AED;
+  --card-bg:    #FFFFFF;
+  --card-hover: #F0F1F3;
+  --shadow-sm:  var(--token-shadow-sm);
+  --shadow-md:  var(--token-shadow-md);
+  --shadow-lg:  var(--token-shadow-lg);
+
+  --st-gen-bg:  var(--token-status-generating-bg);
+  --st-gen-fg:  var(--token-status-generating-fg);
+  --st-gen-dot: var(--token-status-generating-dot);
+  --st-val-bg:  var(--token-status-validating-bg);
+  --st-val-fg:  var(--token-status-validating-fg);
+  --st-val-dot: var(--token-status-validating-dot);
+  --st-pass-bg: var(--token-status-passed-bg);
+  --st-pass-fg: var(--token-status-passed-fg);
+  --st-pass-dot:var(--token-status-passed-dot);
+  --st-flag-bg: var(--token-status-flagged-bg);
+  --st-flag-fg: var(--token-status-flagged-fg);
+  --st-flag-dot:var(--token-status-flagged-dot);
+  --st-idle-bg: var(--token-status-idle-bg);
+  --st-idle-fg: var(--token-status-idle-fg);
+  --st-idle-dot:var(--token-status-idle-dot);
+}

@@ -1,0 +1,53 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Playbook: error-rate-spike</title><link rel="stylesheet" href="./playbook.css"></head><body>
+<h1>Playbook · error-rate-spike</h1>
+<div class="meta">
+  <span class="tag high">severity: high</span>
+  <span class="tag group">monitoring</span>
+  <span class="tag agent">monitor-agent → frontend-agent / backend-agent</span>
+  <span class="tag low">SLA: triage within 15 min</span>
+</div>
+<div class="card danger">
+  <strong>Summary</strong> — The error rate (from Sentry or your error tracker) jumped well
+  past baseline. Check causality with the most recent deploy first.
+</div>
+
+<h2>Trigger</h2>
+<ul>
+  <li>monitor-agent's poll saw error rate &gt; ~3× the rolling baseline.</li>
+  <li>More than ~5 new unresolved issues within a short window.</li>
+</ul>
+
+<h2>Diagnosis</h2>
+<ol>
+  <li>Open Issues for the last hour, sorted by event count.</li>
+  <li>Read the top 3 stack traces → find the common origin.</li>
+  <li>Match the spike start time against the last deploy time.</li>
+  <li>Diff the suspect commit → assess regression likelihood.</li>
+  <li>Estimate affected users.</li>
+</ol>
+
+<h2>Decision tree</h2>
+<div class="tree">spike origin
+├─ recent deploy is clearly the cause
+│   ├─ hotfix possible in &lt;15 min → fix directly
+│   └─ hotfix hard            → roll back now → split the diagnosis into its own task
+├─ external dependency (3rd-party API)
+│   └─ add retry / circuit breaker; watch their status page
+└─ user-behaviour change (traffic surge, a launch)
+    └─ benign — file a task to retune the threshold
+</div>
+
+<h2>Escalation</h2>
+<ul>
+  <li>More than ~100 users affected → user-facing notice + incident channel.</li>
+  <li>Touches a money path or auth → dispatch backend-agent alongside.</li>
+</ul>
+
+<h2>Aftermath</h2>
+<ul>
+  <li>Write a postmortem (<code>data/runs/postmortem-&lt;ts&gt;.md</code>) if it had user impact.</li>
+  <li>Retune the alert threshold for that error group.</li>
+</ul>
+
+<div class="footer">trigger: monitor-agent · owner: frontend-agent / backend-agent</div>
+</body></html>

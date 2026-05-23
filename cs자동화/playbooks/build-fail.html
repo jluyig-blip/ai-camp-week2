@@ -1,0 +1,57 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Playbook: build-fail</title><link rel="stylesheet" href="./playbook.css"></head><body>
+<h1>Playbook · build-fail</h1>
+<div class="meta">
+  <span class="tag high">severity: high</span>
+  <span class="tag group">deploy</span>
+  <span class="tag agent">deploy-gate-agent</span>
+  <span class="tag low">SLA: unblock the push within 30 min</span>
+</div>
+<div class="card danger">
+  <strong>Summary</strong> — A <code>deployCommands</code> stage (type-check / build / test)
+  failed, so the pre-push gate blocked the push. If a deploy was imminent, fix it now.
+</div>
+
+<h2>Trigger</h2>
+<ul>
+  <li>The pre-push hook failed on a <code>deployCommands</code> stage.</li>
+  <li>A local <code>npm run gate</code> failed.</li>
+  <li>monitor-agent saw the hosting provider report a deploy in an ERROR state.</li>
+</ul>
+
+<h2>Diagnosis</h2>
+<ol>
+  <li>Open the latest gate log: <code>data/runs/gate-&lt;ts&gt;/&lt;stage&gt;.log</code>.</li>
+  <li>The first error line usually has <code>file:line</code> — open it, check recent history (<code>git log -p &lt;file&gt;</code>).</li>
+  <li>Dependency issue? <code>npm ls</code> / check whether <code>package.json</code> changed; confirm runtime deps aren't in <code>devDependencies</code>.</li>
+  <li>Import path casing — CI is usually case-sensitive even if your dev machine isn't.</li>
+  <li>New <code>process.env.X</code> read that isn't in <code>.env.example</code>?</li>
+</ol>
+
+<h2>Decision tree</h2>
+<div class="tree">type-check error
+├─ single type error          → fix directly → re-run the gate
+├─ many files affected        → delegate a task to frontend-agent / backend-agent
+└─ shared types changed       → cross-check across the agents that depend on them
+
+build error
+├─ import not found           → check path / casing / extension
+├─ chunk too large            → file a code-splitting task to frontend-agent
+└─ env var missing            → sync .env.example + add it in the hosting console
+</div>
+
+<h2>Escalation</h2>
+<table>
+<tr><th>condition</th><th>action</th></tr>
+<tr><td>not unblocked within 30 min</td><td>post in the infra channel, pull in a lead</td></tr>
+<tr><td>hotfix needed but the gate blocks it</td><td><code>KANBAN_GATE_BYPASS=1 git push</code> (auto-logged to <code>data/runs/overrides.jsonl</code>)</td></tr>
+<tr><td>shared-type cascade failure</td><td>orchestrator dispatches the dependent agents in parallel</td></tr>
+</table>
+
+<h2>Aftermath</h2>
+<ul>
+  <li>Attach the gate report link to the fix PR.</li>
+  <li>If the same failure pattern recurs (3×) → file a task to add a lint/CI rule that catches it.</li>
+</ul>
+
+<div class="footer">trigger: pre-push hook · owner: deploy-gate-agent</div>
+</body></html>

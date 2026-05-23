@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  agent-kanban-harness — macOS launchd agent for the 24h watch daemon.
+
+  1. Replace the THREE __PLACEHOLDERS__ below:
+       __NODE_PATH__          e.g. /opt/homebrew/bin/node   (run `which node`)
+       __AGENT_KANBAN_HARNESS_DIR__  absolute path to your agent-kanban-harness checkout
+       __USER_HOME__          your home directory            (run `echo $HOME`)
+  2. Rename the file to something stable, e.g. com.you.agent-kanban-harness.watch.plist,
+     and make the <key>Label</key> match the file name (without .plist).
+  3. Install:
+       cp com.you.agent-kanban-harness.watch.plist ~/Library/LaunchAgents/
+       launchctl load ~/Library/LaunchAgents/com.you.agent-kanban-harness.watch.plist
+     Stop:
+       launchctl unload ~/Library/LaunchAgents/com.you.agent-kanban-harness.watch.plist
+     Logs:
+       tail -f ~/Library/Logs/agent-kanban-harness/watch.{out,err}.log
+
+  CRON ALTERNATIVE (Linux, or if you'd rather use cron):
+     # run a single sweep every 5 minutes — the scheduler reads .env via lib/config.cjs
+     */5 * * * * cd __AGENT_KANBAN_HARNESS_DIR__ && __NODE_PATH__ lib/watch/scheduler.cjs --once >> __AGENT_KANBAN_HARNESS_DIR__/data/logs/watch-cron.log 2>&1
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.you.agent-kanban-harness.watch</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>__NODE_PATH__</string>
+    <string>__AGENT_KANBAN_HARNESS_DIR__/lib/watch/scheduler.cjs</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>__AGENT_KANBAN_HARNESS_DIR__</string>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>WATCH_INTERVAL_MS</key>
+    <string>300000</string>
+    <key>NODE_ENV</key>
+    <string>production</string>
+  </dict>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>KeepAlive</key>
+  <dict>
+    <key>SuccessfulExit</key>
+    <false/>
+    <key>Crashed</key>
+    <true/>
+  </dict>
+
+  <key>ThrottleInterval</key>
+  <integer>30</integer>
+
+  <key>StandardOutPath</key>
+  <string>__USER_HOME__/Library/Logs/agent-kanban-harness/watch.out.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>__USER_HOME__/Library/Logs/agent-kanban-harness/watch.err.log</string>
+</dict>
+</plist>

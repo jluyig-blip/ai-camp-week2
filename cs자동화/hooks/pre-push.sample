@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# agent-kanban-harness pre-push hook — runs the deploy gate before allowing a push.
+#
+# Install into YOUR APPLICATION REPO (the one config.js → repoPath points at):
+#   ln -sf /absolute/path/to/agent-kanban-harness/hooks/pre-push.sample .git/hooks/pre-push
+#   chmod +x /absolute/path/to/agent-kanban-harness/hooks/pre-push.sample
+# (Or copy it, if you prefer not to symlink.)
+#
+# Tell it where the harness lives — either edit AGENT_KANBAN_HARNESS_DIR below, or export it:
+#   export AGENT_KANBAN_HARNESS_DIR=/absolute/path/to/agent-kanban-harness
+#
+# Bypass (audited — logs to agent-kanban-harness/data/runs/overrides.jsonl):
+#   KANBAN_GATE_BYPASS=1 git push
+# Bypass entirely (not logged):
+#   git push --no-verify
+
+set -e
+
+# --- where is the harness? -----------------------------------------------------
+AGENT_KANBAN_HARNESS_DIR="${AGENT_KANBAN_HARNESS_DIR:-}"
+if [ -z "$AGENT_KANBAN_HARNESS_DIR" ]; then
+  # Best effort: if this hook is a symlink, follow it to find the harness root.
+  HOOK_PATH="$(readlink -f "$0" 2>/dev/null || echo "$0")"
+  AGENT_KANBAN_HARNESS_DIR="$(cd "$(dirname "$HOOK_PATH")/.." 2>/dev/null && pwd || true)"
+fi
+GATE_RUNNER="$AGENT_KANBAN_HARNESS_DIR/lib/gate/index.cjs"
+
+if [ -z "$AGENT_KANBAN_HARNESS_DIR" ] || [ ! -f "$GATE_RUNNER" ]; then
+  echo "[agent-kanban-harness] gate runner not found (set AGENT_KANBAN_HARNESS_DIR) — skipping gate"
+  exit 0
+fi
+
+# --- audited bypass ------------------------------------------------------------
+if [ "$KANBAN_GATE_BYPASS" = "1" ]; then
+  echo "[agent-kanban-harness] BYPASS — gate skipped (audit logged)"
+  OVERRIDE_LOG="$AGENT_KANBAN_HARNESS_DIR/data/runs/overrides.jsonl"
+  mkdir -p "$(dirname "$OVERRIDE_LOG")"
+  printf '{"timestamp":"%s","branch":"%s","user":"%s","reason":"KANBAN_GATE_BYPASS=1"}\n' \
+    "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+    "$(git rev-parse --abbrev-ref HEAD)" \
+    "$(git config user.email || whoami)" \
+    >> "$OVERRIDE_LOG"
+  exit 0
+fi
+
+# --- run the gate --------------------------------------------------------------
+BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+echo "[agent-kanban-harness] running pre-deploy gate for branch '$BRANCH'..."
+node "$GATE_RUNNER"
+GATE_EXIT=$?
+
+if [ $GATE_EXIT -ne 0 ]; then
+  echo ""
+  echo "[agent-kanban-harness] ✗ gate FAILED (exit $GATE_EXIT). Push BLOCKED."
+  echo "[agent-kanban-harness] reports: $AGENT_KANBAN_HARNESS_DIR/data/runs/gate-*/"
+  echo "[agent-kanban-harness] to bypass (logged): KANBAN_GATE_BYPASS=1 git push"
+  exit $GATE_EXIT
+fi
+
+echo "[agent-kanban-harness] ✓ gate passed. Push allowed."
+exit 0
