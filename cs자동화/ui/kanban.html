@@ -174,6 +174,8 @@ body{display:flex;flex-direction:column}
 .col-empty{color:var(--c-text-4);font-size:11px;text-align:center;padding:24px 0;font-style:italic}
 .tc{background:var(--c-surface);border:1px solid var(--c-border);border-left:3px solid var(--c-text-4);border-radius:7px;padding:8px 10px;cursor:pointer;transition:box-shadow 0.12s,transform 0.12s;box-shadow:var(--sh-sm)}
 .tc:hover{box-shadow:var(--sh-md);transform:translateY(-1px)}
+.tc.dragging{opacity:0.35;transform:scale(0.97);box-shadow:none}
+.col-cards.drag-over{background:var(--c-accent-bg);outline:2px dashed var(--c-accent);outline-offset:-4px;border-radius:8px}
 .tc.disagreed{border-left-color:var(--st-flag-dot) !important;background:linear-gradient(90deg,rgba(239,68,68,0.05),transparent 60%),var(--c-surface)}
 .tc.subtask{padding:6px 9px;border-left-width:2px;opacity:0.95}
 .tc-top{display:flex;align-items:center;gap:4px;margin-bottom:5px;flex-wrap:wrap}
@@ -659,6 +661,45 @@ function renderBoard(){
     w.innerHTML=cols[c].map(taskCardHTML).join('');
   }
   const vcnt=document.getElementById('visible-cnt');if(vcnt)vcnt.textContent=total+' 표시중';
+  setupDragDrop();
+}
+function setupDragDrop(){
+  const STATUS_MAP={'col-pending':'pending','col-in_progress':'in_progress','col-in_review':'in_review','col-completed':'done'};
+  let dragId=null;
+  document.querySelectorAll('.tc').forEach(card=>{
+    card.addEventListener('dragstart',e=>{
+      dragId=card.dataset.id;
+      setTimeout(()=>card.classList.add('dragging'),0);
+      e.dataTransfer.effectAllowed='move';
+    });
+    card.addEventListener('dragend',()=>{
+      card.classList.remove('dragging');
+      dragId=null;
+      document.querySelectorAll('.col-cards').forEach(c=>c.classList.remove('drag-over'));
+    });
+  });
+  document.querySelectorAll('.col-cards').forEach(col=>{
+    col.addEventListener('dragover',e=>{
+      e.preventDefault();
+      e.dataTransfer.dropEffect='move';
+      document.querySelectorAll('.col-cards').forEach(c=>c.classList.remove('drag-over'));
+      col.classList.add('drag-over');
+    });
+    col.addEventListener('dragleave',e=>{
+      if(!col.contains(e.relatedTarget))col.classList.remove('drag-over');
+    });
+    col.addEventListener('drop',async e=>{
+      e.preventDefault();
+      col.classList.remove('drag-over');
+      if(!dragId)return;
+      const newStatus=STATUS_MAP[col.id];
+      if(!newStatus)return;
+      const task=state.tasks.find(t=>String(t.id)===String(dragId));
+      if(task&&STATUS_MAP['col-'+getCol(task)]===newStatus)return;
+      await fetch(`/api/tasks/${dragId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:newStatus})});
+      await loadTasks();
+    });
+  });
 }
 function taskCardHTML(t){
   const agent=state.agents.find(a=>a.name===t.agent);const agentColor=agent?.color||'#a1a1aa';const agentLabel=agent?.name||t.agent||'—';
@@ -668,7 +709,7 @@ function taskCardHTML(t){
   const tags=[];if(isIncident)tags.push({label:'incident',cls:'tag-incident'});
   if(t.tags){(Array.isArray(t.tags)?t.tags:[t.tags]).forEach(tag=>{if(!tag)return;const tl=String(tag).toLowerCase();const cls=tl.includes('security')?'tag-security':tl.includes('harness')?'tag-harness':tl.includes('content')?'tag-content':'tag-default';tags.push({label:tag,cls});});}
   const kids=state.tasks.filter(x=>x.parentId===t.id);const kdone=kids.filter(c=>getCol(c)==='completed').length;const kinp=kids.filter(c=>getCol(c)==='in_progress').length;const kt=kids.length;const kpct=kt?Math.round(kdone/kt*100):0;
-  return `<div class="tc${isSub?' subtask':''}${dis?' disagreed':''}" data-id="${t.id}" style="border-left-color:${dis?'var(--st-flag-dot)':agentColor}">
+  return `<div class="tc${isSub?' subtask':''}${dis?' disagreed':''}" data-id="${t.id}" draggable="true" style="border-left-color:${dis?'var(--st-flag-dot)':agentColor}">
     <div class="tc-top"><span class="tc-id">#${t.id}${isSub?`<span class="pref"> ←#${t.parentId}</span>`:''}</span><span class="tc-pri pri-${priority}">${priority}</span>${resourceAction?`<span class="tc-resource">${escapeHtml((resourceAction.kind||'resource').replace('-create',''))}</span>`:''}${tags.map(tg=>`<span class="tc-tag ${tg.cls}">${escapeHtml(tg.label)}</span>`).join('')}</div>
     <div class="tc-title">${escapeHtml(t.subject||'제목 없음')}</div>
     <div class="tc-meta"><span class="tc-ag"><span class="agd" style="background:${agentColor}"></span>${escapeHtml(agentLabel)}</span>${runner?`<span class="tc-rn">${renderRunner(runner)}</span>`:''}${agreement?`<span class="tc-agree ${agreement}">${agreement==='agreed'?'✓':agreement==='disagreed'?'✗':'⋯'}</span>`:''}</div>
