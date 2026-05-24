@@ -1,0 +1,54 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Playbook: TEMPLATE</title><link rel="stylesheet" href="./playbook.css"></head><body>
+<!-- Copy this file to playbooks/<incident-name>.html and fill in every section.
+     A playbook is a short, scannable runbook: when it fires, how to diagnose,
+     the decision tree, when to escalate, and what to do afterwards. Keep it on
+     one page. The orchestrator / agents link to it from tasks; humans read it
+     under pressure. -->
+<h1>Playbook · &lt;incident-name&gt;</h1>
+<div class="meta">
+  <span class="tag high">severity: &lt;low|medium|high&gt;</span>
+  <span class="tag group">&lt;owning area&gt;</span>
+  <span class="tag agent">&lt;owning agent&gt;</span>
+  <span class="tag low">SLA: &lt;target time to mitigate&gt;</span>
+</div>
+<div class="card danger">
+  <strong>Summary</strong> — One or two sentences: what state the system is in when this
+  fires, and the single most important thing to check first.
+</div>
+
+<h2>Trigger</h2>
+<ul>
+  <li>What detector / hook / observation creates a task that points here.</li>
+  <li>Any threshold that escalates an existing task to this playbook.</li>
+</ul>
+
+<h2>Diagnosis</h2>
+<ol>
+  <li>First thing to look at (a log path, a dashboard, a command).</li>
+  <li>How to localize the cause (correlate with deploys, with other signals).</li>
+  <li>How to confirm the hypothesis cheaply (reproduce locally, narrow the blast radius).</li>
+</ol>
+
+<h2>Decision tree</h2>
+<div class="tree">cause
+├─ &lt;case A&gt;  → &lt;action&gt; → re-run the gate / verify
+├─ &lt;case B&gt;  → &lt;route to which agent / which fix&gt;
+└─ &lt;case C&gt;  → &lt;rollback / escalate&gt;
+</div>
+
+<h2>Escalation</h2>
+<table>
+<tr><th>condition</th><th>action</th></tr>
+<tr><td>not mitigated within the SLA</td><td>page the on-call / post in the incident channel</td></tr>
+<tr><td>hotfix needed but the gate blocks it</td><td><code>KANBAN_GATE_BYPASS=1 git push</code> (audit-logged)</td></tr>
+</table>
+
+<h2>Aftermath</h2>
+<ul>
+  <li>Link the fix PR to the gate/run report.</li>
+  <li>If this pattern recurs (3×): file a task to add a check that catches it earlier.</li>
+  <li>Write a short postmortem if it had user impact.</li>
+</ul>
+
+<div class="footer">trigger: &lt;…&gt; · owner: &lt;agent&gt; · last reviewed: YYYY-MM-DD</div>
+</body></html>

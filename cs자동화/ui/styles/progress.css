@@ -1,0 +1,315 @@
+/* ============================================================
+   agent-kanban-harness — live progress indicators, event log, and toast.
+   Depends on: tokens.css (import that first).
+   ============================================================ */
+
+/* ── Connection Status Bar ──────────────────────────────────── */
+.ws-status {
+  display: flex;
+  align-items: center;
+  gap: var(--token-space-2);
+  padding: 3px var(--token-space-3);
+  border-radius: var(--token-radius-full);
+  font-size: var(--token-size-sm);
+  font-weight: var(--token-weight-medium);
+  background: var(--s2);
+  border: 1px solid var(--b1);
+}
+.ws-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--token-radius-full);
+  flex-shrink: 0;
+}
+.ws-status[data-state="connected"]    .ws-dot { background: var(--gn); }
+.ws-status[data-state="connecting"]   .ws-dot {
+  background: var(--am);
+  animation: ws-pulse var(--token-duration-pulse) var(--token-ease-default) infinite;
+}
+.ws-status[data-state="disconnected"] .ws-dot { background: var(--rd); }
+.ws-status[data-state="idle"]         .ws-dot { background: var(--st-idle-dot); }
+
+@keyframes ws-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+.ws-label {
+  color: var(--t2);
+  font-family: var(--token-font-mono);
+  font-size: var(--token-size-xs);
+}
+.ws-status[data-state="connected"]  .ws-label { color: var(--gn); }
+.ws-status[data-state="connecting"] .ws-label { color: var(--am); }
+
+/* ── Run Progress Header ────────────────────────────────────── */
+.run-header {
+  display: flex;
+  align-items: center;
+  gap: var(--token-space-4);
+  padding: var(--token-space-3) var(--token-space-6);
+  background: var(--s1);
+  border-bottom: 1px solid var(--b1);
+}
+
+.run-id {
+  font-family: var(--token-font-mono);
+  font-size: var(--token-size-sm);
+  color: var(--t3);
+}
+
+.run-progress {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--token-space-3);
+}
+
+.progress-bar-wrap {
+  flex: 1;
+  height: 4px;
+  background: var(--b1);
+  border-radius: var(--token-radius-full);
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--ac);
+  border-radius: var(--token-radius-full);
+  transition: width var(--token-duration-normal) var(--token-ease-out);
+}
+
+.progress-pct {
+  font-family: var(--token-font-mono);
+  font-size: var(--token-size-xs);
+  color: var(--t3);
+  min-width: 32px;
+  text-align: right;
+}
+
+/* ── Event Log — <details> collapsible ──────────────────────── */
+.event-log {
+  border-top: 1px solid var(--b1);
+  background: var(--s1);
+}
+
+.event-log > summary {
+  display: flex;
+  align-items: center;
+  gap: var(--token-space-2);
+  padding: var(--token-space-2) var(--token-space-6);
+  cursor: pointer;
+  font-size: var(--token-size-sm);
+  font-weight: var(--token-weight-medium);
+  color: var(--t3);
+  user-select: none;
+  list-style: none;
+}
+.event-log > summary::-webkit-details-marker { display: none; }
+.event-log > summary::before {
+  content: '▶';
+  font-size: 9px;
+  transition: transform var(--token-duration-fast);
+}
+.event-log[open] > summary::before { transform: rotate(90deg); }
+.event-log > summary:hover { color: var(--t1); }
+
+.event-log-title {
+  font-size: var(--token-size-sm);
+  color: var(--t3);
+}
+.event-log-count {
+  font-family: var(--token-font-mono);
+  font-size: var(--token-size-xs);
+  background: var(--s2);
+  color: var(--t4);
+  padding: 1px 5px;
+  border-radius: var(--token-radius-full);
+  margin-left: auto;
+}
+
+/* Log lines container */
+.event-log-lines {
+  max-height: 260px;
+  overflow-y: auto;
+  padding: var(--token-space-2) var(--token-space-6);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  scroll-behavior: smooth;
+}
+
+.event-log-lines::-webkit-scrollbar { width: 4px; }
+.event-log-lines::-webkit-scrollbar-thumb {
+  background: var(--b2);
+  border-radius: var(--token-radius-full);
+}
+
+/* Individual log line — format: [HH:MM:SS] event_type payload_summary */
+.log-line {
+  font-family: var(--token-font-mono);
+  font-size: var(--token-size-xs);    /* 10px */
+  line-height: var(--token-lh-normal);
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding: 1px 0;
+  display: flex;
+  gap: var(--token-space-2);
+}
+
+.log-time {
+  color: var(--t4);
+  flex-shrink: 0;
+}
+
+.log-event  { flex-shrink: 0; }
+.log-payload { color: var(--t3); overflow: hidden; text-overflow: ellipsis; }
+
+/* Log line color coding per pattern spec */
+.log-line[data-type="error"]          .log-event,
+.log-line[data-type="blueprint.error"]  .log-event,
+.log-line[data-type="component.error"]  .log-event {
+  color: #f87171;  /* rose-400 */
+}
+.log-line[data-type="run.completed"]         .log-event,
+.log-line[data-type="component.validated"]   .log-event,
+.log-line[data-type="blueprint.completed"]   .log-event,
+.log-line[data-type="chapter.regen_completed"] .log-event {
+  color: #34d399;  /* emerald-400 */
+}
+.log-line[data-type="component.regenerating"] .log-event,
+.log-line[data-type="chapter.regen_started"]  .log-event,
+.log-line[data-type="component.flagged"]      .log-event {
+  color: #fbbf24;  /* amber-400 */
+}
+/* zinc — default for all others */
+.log-line .log-event { color: var(--t3); }
+
+/* ── Reconnect Notice ───────────────────────────────────────── */
+.reconnect-notice {
+  display: none;
+  align-items: center;
+  gap: var(--token-space-2);
+  padding: var(--token-space-2) var(--token-space-6);
+  background: color-mix(in srgb, var(--am) 12%, var(--s1));
+  border-bottom: 1px solid color-mix(in srgb, var(--am) 30%, transparent);
+  font-size: var(--token-size-sm);
+  color: var(--am);
+}
+.reconnect-notice.visible { display: flex; }
+.reconnect-spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--am);
+  border-top-color: transparent;
+  border-radius: var(--token-radius-full);
+  animation: spin var(--token-duration-slow) linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Toast Notifications ────────────────────────────────────── */
+.toast-container {
+  position: fixed;
+  bottom: var(--token-space-6);
+  right: var(--token-space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--token-space-2);
+  z-index: var(--token-z-toast);
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: var(--token-space-2);
+  padding: var(--token-space-2) var(--token-space-4);
+  border-radius: var(--r);
+  font-size: var(--token-size-md);
+  font-weight: var(--token-weight-medium);
+  box-shadow: var(--shadow-lg);
+  pointer-events: auto;
+  animation: toast-in var(--token-duration-normal) var(--token-ease-out);
+}
+.toast.removing {
+  animation: toast-out var(--token-duration-fast) var(--token-ease-in) forwards;
+}
+
+.toast-ok   { background: var(--token-toast-ok-bg);   color: var(--token-toast-ok-fg); }
+.toast-err  { background: var(--token-toast-err-bg);  color: var(--token-toast-err-fg); }
+.toast-info { background: var(--token-toast-info-bg); color: var(--token-toast-info-fg); }
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes toast-out {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(8px); }
+}
+
+/* ── Blueprint loading state ────────────────────────────────── */
+.blueprint-loading {
+  display: flex;
+  align-items: center;
+  gap: var(--token-space-3);
+  padding: var(--token-space-4) var(--token-space-6);
+  color: var(--t3);
+  font-size: var(--token-size-md);
+}
+.blueprint-loading .spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--b2);
+  border-top-color: var(--ac);
+  border-radius: var(--token-radius-full);
+  animation: spin var(--token-duration-slow) linear infinite;
+}
+
+/* ── Error Banner ───────────────────────────────────────────── */
+.err-banner {
+  display: none;
+  align-items: center;
+  gap: var(--token-space-3);
+  padding: var(--token-space-3) var(--token-space-6);
+  background: color-mix(in srgb, var(--rd) 12%, var(--s1));
+  border-bottom: 2px solid color-mix(in srgb, var(--rd) 40%, transparent);
+  color: var(--rd);
+  font-size: var(--token-size-md);
+  z-index: var(--token-z-err-banner);
+}
+.err-banner.visible { display: flex; }
+.err-banner-close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--rd);
+  cursor: pointer;
+  font-size: var(--token-size-lg);
+  line-height: 1;
+  padding: 2px var(--token-space-1);
+}
+
+/* ── Anchor highlight (flag-anchor-system) ──────────────────── */
+.anchor-highlight {
+  background: var(--token-anchor-bg);
+  border: 1px solid var(--token-anchor-border);
+  border-radius: var(--token-radius-sm);
+  padding: 0 3px;
+  position: relative;
+}
+.anchor-highlight::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--token-anchor-pulse);
+  opacity: 0;
+  animation: anchor-pulse var(--token-duration-pulse) var(--token-ease-default) infinite;
+}
+@keyframes anchor-pulse {
+  0%, 100% { opacity: 0; }
+  50%       { opacity: 0.4; }
+}

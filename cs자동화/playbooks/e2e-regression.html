@@ -1,0 +1,58 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Playbook: e2e-regression</title><link rel="stylesheet" href="./playbook.css"></head><body>
+<h1>Playbook · e2e-regression</h1>
+<div class="meta">
+  <span class="tag high">severity: high</span>
+  <span class="tag group">qa</span>
+  <span class="tag agent">deploy-gate-agent → frontend-agent / backend-agent</span>
+  <span class="tag low">SLA: 1h</span>
+</div>
+<div class="card danger">
+  <strong>Summary</strong> — A golden-path end-to-end scenario regressed. Treat as
+  user-impacting until proven otherwise.
+</div>
+
+<h2>Trigger</h2>
+<ul>
+  <li>A scheduled E2E run, or the gate's E2E stage, failed a golden-path scenario.</li>
+  <li>The same scenario failed twice in a row → an auto-created task points here (severity high).</li>
+</ul>
+
+<h2>Golden paths (priority order — adapt to your app)</h2>
+<table>
+<tr><th>#</th><th>scenario</th><th>impact if it breaks</th></tr>
+<tr><td>1</td><td>sign in (all auth methods)</td><td>everyone locked out — sev1</td></tr>
+<tr><td>2</td><td>core happy path of the product</td><td>users blocked — sev1</td></tr>
+<tr><td>3</td><td>checkout / payment (if any)</td><td>revenue impact — sev1</td></tr>
+<tr><td>4</td><td>account/admin flows</td><td>operational impact</td></tr>
+</table>
+
+<h2>Diagnosis</h2>
+<ol>
+  <li>Open the E2E log/trace: <code>data/runs/task-&lt;id&gt;/&lt;stage&gt;.log</code> (+ the recorded trace).</li>
+  <li>From the failure screenshot, decide: visual regression vs logic regression vs flake.</li>
+  <li>Reproduce locally headed.</li>
+  <li>Correlate the failure time with the last deploy and with error-tracking events.</li>
+</ol>
+
+<h2>Decision tree</h2>
+<div class="tree">failure location
+├─ broken UI selector  → frontend-agent (add stable test ids)
+├─ changed API response → backend-agent (server-side regression)
+├─ timeout             → environment (cold start) → 3 retries; still failing ⇒ real regression
+└─ DB state            → fixture problem (E2E suite self-check)
+</div>
+
+<h2>Escalation</h2>
+<ul>
+  <li>Two golden paths failing at once → freeze deploys (no merges to the main branch).</li>
+  <li>Happening to users right now → page the on-call.</li>
+</ul>
+
+<h2>Aftermath</h2>
+<ul>
+  <li>Add a sharper assertion to the scenario that broke.</li>
+  <li>Consider promoting a near-miss scenario into the golden-path set.</li>
+</ul>
+
+<div class="footer">trigger: scheduled E2E / deploy gate · owner: deploy-gate-agent</div>
+</body></html>

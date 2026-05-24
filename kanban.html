@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>AI Camp Week 2 칸반보드</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 24px; }
+  h1 { text-align: center; margin-bottom: 24px; color: #1a1a2e; font-size: 22px; }
+  .board { display: flex; gap: 16px; align-items: flex-start; }
+  .column { background: #e4e6ea; border-radius: 12px; padding: 12px; width: 240px; min-width: 240px; }
+  .column-title { font-weight: 700; font-size: 13px; color: #555; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; padding: 4px 8px; }
+  .card { background: #fff; border-radius: 8px; padding: 12px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ccc; }
+  .card.week1 { border-left-color: #6c8ebf; }
+  .card.week2 { border-left-color: #f5a623; }
+  .card.week4 { border-left-color: #7ed321; }
+  .card.week56 { border-left-color: #9b59b6; }
+  .card-week { font-size: 10px; font-weight: 600; color: #888; margin-bottom: 4px; text-transform: uppercase; }
+  .card-title { font-size: 13px; font-weight: 600; color: #1a1a2e; line-height: 1.4; margin-bottom: 6px; }
+  .card-type { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 600; }
+  .type-pre { background: #dbeafe; color: #1d4ed8; }
+  .type-weekly { background: #fef3c7; color: #92400e; }
+  .type-final { background: #d1fae5; color: #065f46; }
+  .due { font-size: 10px; color: #e53e3e; margin-top: 6px; font-weight: 600; }
+  .col-todo { }
+  .col-inprogress .column { background: #fff8e1; }
+  .col-overdue .column { background: #fee2e2; }
+  .col-done .column { background: #d1fae5; }
+</style>
+</head>
+<body>
+<h1>AI Camp — 과제 칸반보드</h1>
+<div class="board">
+
+  <!-- Done -->
+  <div class="col-done">
+    <div class="column">
+      <div class="column-title">✅ 완료</div>
+
+      <div class="card week1">
+        <div class="card-week">1주차</div>
+        <div class="card-title">내가 만들고 싶은 자동화 / 서비스 후보 3개</div>
+        <span class="card-type type-pre">사전과제</span>
+      </div>
+
+      <div class="card week1">
+        <div class="card-week">1주차</div>
+        <div class="card-title">후보 3개 개발 단계 배치 + AI 평가</div>
+        <span class="card-type type-weekly">위클리</span>
+      </div>
+
+      <div class="card week1">
+        <div class="card-week">1주차</div>
+        <div class="card-title">타겟 업무 선정 이유서 — 6주 나침반</div>
+        <span class="card-type type-weekly">위클리</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overdue -->
+  <div class="col-overdue">
+    <div class="column">
+      <div class="column-title">🔴 기한 초과</div>
+
+      <div class="card week2">
+        <div class="card-week">2주차</div>
+        <div class="card-title">내 자동화 MVP 컨텍스트 세팅 + 첫 격차 분석</div>
+        <span class="card-type type-weekly">위클리</span>
+        <div class="due">마감: 2026-05-20</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Todo -->
+  <div class="col-todo">
+    <div class="column">
+      <div class="column-title">📋 예정</div>
+
+      <div class="card week4">
+        <div class="card-week">4주차</div>
+        <div class="card-title">내 업무 자동화 설계서</div>
+        <span class="card-type type-final">파이널</span>
+      </div>
+
+      <div class="card week56">
+        <div class="card-week">5주차</div>
+        <div class="card-title">팀 업무 개선안</div>
+        <span class="card-type type-final">파이널</span>
+      </div>
+
+      <div class="card week56">
+        <div class="card-week">6주차</div>
+        <div class="card-title">API 서비스 기획서</div>
+        <span class="card-type type-final">파이널</span>
+      </div>
+
+      <div class="card week56">
+        <div class="card-week">6주차</div>
+        <div class="card-title">Codex 실행용 작업지시서</div>
+        <span class="card-type type-final">파이널</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

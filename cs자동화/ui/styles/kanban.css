@@ -1,0 +1,436 @@
+/* ============================================================
+   agent-kanban-harness — 4-column kanban board styles.
+   Depends on: tokens.css (import that first).
+   ============================================================ */
+
+/* ── Reset ─────────────────────────────────────────────────── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--token-font-sans);
+  background: var(--bg);
+  color: var(--t1);
+  font-size: var(--token-size-md);    /* 13px */
+  line-height: var(--token-lh-normal);
+  -webkit-font-smoothing: antialiased;
+}
+
+code, .mono {
+  font-family: var(--token-font-mono);
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+.header {
+  height: 52px;
+  padding: 0 var(--token-space-6);
+  border-bottom: 1px solid var(--b1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--s1);
+  position: sticky;
+  top: 0;
+  z-index: var(--token-z-sticky);
+}
+
+.header-left  { display: flex; align-items: center; gap: var(--token-space-3); }
+.header-right { display: flex; align-items: center; gap: var(--token-space-2); }
+
+.logo {
+  font-size: var(--token-size-lg);  /* 14px */
+  font-weight: var(--token-weight-bold);
+  letter-spacing: -0.02em;
+  color: var(--t1);
+}
+.logo-dot { color: var(--ac); }
+
+.header-sub {
+  font-size: var(--token-size-sm);  /* 11px */
+  color: var(--t3);
+  font-family: var(--token-font-mono);
+  padding-left: var(--token-space-3);
+  border-left: 1px solid var(--b1);
+}
+
+/* Stats cluster */
+.stats { display: flex; gap: 2px; }
+.stat {
+  padding: var(--token-space-1) 14px;
+  text-align: center;
+  background: var(--s2);
+  border: 1px solid var(--b1);
+}
+.stat:first-child { border-radius: var(--r) 0 0 var(--r); }
+.stat:last-child  { border-radius: 0 var(--r) var(--r) 0; }
+.stat:not(:first-child) { border-left: none; }
+.stat .num {
+  font-size: var(--token-size-xl);  /* 16px */
+  font-weight: var(--token-weight-bold);
+  font-family: var(--token-font-mono);
+  line-height: var(--token-lh-tight);
+}
+.stat .lbl {
+  font-size: 9px;
+  color: var(--t4);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: var(--token-weight-medium);
+}
+
+/* Theme switcher */
+.theme-switcher {
+  display: flex;
+  gap: 2px;
+  margin-left: var(--token-space-3);
+  padding-left: var(--token-space-3);
+  border-left: 1px solid var(--b1);
+}
+.theme-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--token-radius-full);
+  border: 2px solid var(--b2);
+  cursor: pointer;
+  transition: border-color var(--token-duration-fast) var(--token-ease-default),
+              transform var(--token-duration-fast) var(--token-ease-default);
+  padding: 0;
+}
+.theme-btn:hover { transform: scale(1.15); }
+.theme-btn.active { border-color: var(--ac); box-shadow: 0 0 0 2px var(--ac); }
+.theme-btn[data-t="dark"]  { background: #09090B; }
+.theme-btn[data-t="navy"]  { background: #0B1220; }
+.theme-btn[data-t="light"] { background: #F4F5F7; }
+
+/* ── Toolbar ────────────────────────────────────────────────── */
+.toolbar {
+  min-height: 36px;
+  padding: var(--token-space-1) var(--token-space-6);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px;
+  border-bottom: 1px solid var(--b1);
+  background: var(--s1);
+}
+.toolbar button {
+  padding: var(--token-space-1) 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: var(--token-size-sm);
+  font-weight: var(--token-weight-medium);
+  color: var(--t3);
+  font-family: inherit;
+  transition: color var(--token-duration-fast);
+  border-radius: var(--r);
+}
+.toolbar button:hover { color: var(--t1); }
+.toolbar button.active { background: var(--s3); color: var(--t1); }
+.toolbar .right { margin-left: auto; display: flex; align-items: center; gap: var(--token-space-1); }
+.toolbar .add-btn {
+  background: var(--t1);
+  color: var(--bg);
+  font-weight: var(--token-weight-semibold);
+  padding: 5px 14px;
+  border-radius: var(--r);
+  font-size: var(--token-size-sm);
+}
+.toolbar .add-btn:hover { opacity: 0.9; color: var(--bg); }
+
+/* ── Project Tabs ───────────────────────────────────────────── */
+.project-tabs {
+  height: 36px;
+  padding: 0 var(--token-space-6);
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  border-bottom: 1px solid var(--b1);
+  background: var(--s1);
+  overflow-x: auto;
+}
+.project-tabs:empty { display: none; }
+.tab-btn {
+  padding: 0 var(--token-space-3);
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--t3);
+  font-size: var(--token-size-sm);
+  font-weight: var(--token-weight-medium);
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color var(--token-duration-fast), border-color var(--token-duration-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--token-space-1);
+}
+.tab-btn:hover { color: var(--t1); }
+.tab-btn.active {
+  color: var(--t1);
+  border-bottom-color: var(--ac);
+}
+.tab-count {
+  font-family: var(--token-font-mono);
+  font-size: var(--token-size-xs);
+  background: var(--s3);
+  color: var(--t3);
+  padding: 1px 5px;
+  border-radius: var(--token-radius-full);
+}
+.tab-btn.active .tab-count { background: var(--ac); color: #fff; }
+
+/* ── Kanban Board — 4 columns ───────────────────────────────── */
+.board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--token-space-3);
+  padding: var(--token-space-4) var(--token-space-6);
+  align-items: start;
+  min-height: calc(100vh - 180px);
+}
+
+@media (max-width: 900px) {
+  .board { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 500px) {
+  .board { grid-template-columns: 1fr; }
+}
+
+/* ── Column ─────────────────────────────────────────────────── */
+.col {
+  background: var(--s1);
+  border: 1px solid var(--b1);
+  border-radius: var(--r-lg);
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+}
+
+.col-header {
+  padding: var(--token-space-2) var(--token-space-3);
+  border-bottom: 1px solid var(--b1);
+  display: flex;
+  align-items: center;
+  gap: var(--token-space-2);
+}
+
+.col-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--token-radius-full);
+  flex-shrink: 0;
+}
+
+.col-label {
+  font-size: var(--token-size-sm);    /* 11px */
+  font-weight: var(--token-weight-semibold);
+  color: var(--t1);
+  flex: 1;
+}
+
+.col-count {
+  font-family: var(--token-font-mono);
+  font-size: var(--token-size-sm);
+  color: var(--t3);
+  min-width: 18px;
+  text-align: right;
+}
+
+/* Column color identifiers */
+.col[data-status="generating"] .col-dot  { background: var(--st-gen-dot); }
+.col[data-status="validating"] .col-dot  { background: var(--st-val-dot); }
+.col[data-status="passed"]     .col-dot  { background: var(--st-pass-dot); }
+.col[data-status="flagged"]    .col-dot  { background: var(--st-flag-dot); }
+
+.col-cards {
+  padding: var(--token-space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--token-space-2);
+  flex: 1;
+}
+
+/* ── Card ────────────────────────────────────────────────────── */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--b1);
+  border-radius: var(--r);
+  padding: var(--token-space-2) var(--token-space-3);
+  cursor: default;
+  transition: background var(--token-duration-fast) var(--token-ease-default),
+              box-shadow var(--token-duration-fast) var(--token-ease-default);
+  position: relative;
+  overflow: hidden;
+}
+.card:hover {
+  background: var(--card-hover);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Status left-border accent */
+.card[data-status="generating"]  { border-left: 3px solid var(--st-gen-dot); }
+.card[data-status="validating"]  { border-left: 3px solid var(--st-val-dot); }
+.card[data-status="passed"]      { border-left: 3px solid var(--st-pass-dot); }
+.card[data-status="flagged"]     { border-left: 3px solid var(--st-flag-dot); }
+.card[data-status="regenerating"]{ border-left: 3px solid var(--st-val-dot); }
+.card[data-status="error"]       { border-left: 3px solid var(--rd); }
+.card[data-status="idle"]        { border-left: 3px solid var(--st-idle-dot); }
+
+/* Card top row: type·location + status badge */
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--token-space-2);
+  margin-bottom: var(--token-space-1);
+}
+
+.card-type-loc {
+  font-size: var(--token-size-sm);    /* 11px */
+  font-weight: var(--token-weight-semibold);
+  color: var(--t1);
+  line-height: var(--token-lh-tight);
+}
+.card-type { color: var(--t1); }
+.card-loc  { color: var(--t3); font-weight: var(--token-weight-regular); }
+
+/* Status badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px var(--token-space-2);
+  border-radius: var(--token-radius-full);
+  font-size: var(--token-size-xs);    /* 10px */
+  font-weight: var(--token-weight-semibold);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: var(--token-radius-full);
+}
+
+.badge-generating  { background: var(--st-gen-bg);  color: var(--st-gen-fg);  }
+.badge-generating::before  { background: var(--st-gen-dot);  }
+.badge-validating  { background: var(--st-val-bg);  color: var(--st-val-fg);  }
+.badge-validating::before  { background: var(--st-val-dot);  }
+.badge-passed      { background: var(--st-pass-bg); color: var(--st-pass-fg); }
+.badge-passed::before      { background: var(--st-pass-dot); }
+.badge-flagged     { background: var(--st-flag-bg); color: var(--st-flag-fg); }
+.badge-flagged::before     { background: var(--st-flag-dot); }
+.badge-regenerating{ background: var(--st-val-bg);  color: var(--st-val-fg);  }
+.badge-regenerating::before{ background: var(--st-val-dot);  }
+.badge-error       { background: var(--token-status-error-bg); color: var(--token-status-error-fg); }
+.badge-error::before       { background: var(--token-status-error-dot); }
+.badge-idle        { background: var(--st-idle-bg); color: var(--st-idle-fg); }
+.badge-idle::before        { background: var(--st-idle-dot); }
+
+/* Card subtitle (chapter name) */
+.card-subtitle {
+  font-size: var(--token-size-base);  /* 12px */
+  color: var(--t2);
+  margin-bottom: var(--token-space-1);
+  line-height: var(--token-lh-tight);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Model pair line */
+.card-model {
+  font-family: var(--token-font-mono);
+  font-size: var(--token-size-xs);    /* 10px */
+  color: var(--t4);
+  display: flex;
+  align-items: center;
+  gap: var(--token-space-1);
+}
+.card-model .arrow { color: var(--t4); opacity: 0.5; }
+
+/* Optional: score (if passed) */
+.card-score {
+  font-family: var(--token-font-mono);
+  font-size: var(--token-size-xs);
+  color: var(--st-pass-fg);
+  background: var(--st-pass-bg);
+  padding: 1px var(--token-space-1);
+  border-radius: var(--token-radius-sm);
+  display: inline-block;
+  margin-top: var(--token-space-1);
+}
+
+/* Optional: flag count (if flagged) */
+.card-flags {
+  font-size: var(--token-size-xs);
+  color: var(--st-flag-fg);
+  background: var(--st-flag-bg);
+  padding: 1px var(--token-space-2);
+  border-radius: var(--token-radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: var(--token-space-1);
+}
+
+/* ── Card Transition Animations ─────────────────────────────── */
+/* Fade-out when leaving a column: 150ms */
+@keyframes card-leave {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-4px); }
+}
+/* Fade-in when entering a column: 250ms */
+@keyframes card-enter {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card.leaving {
+  animation: card-leave var(--token-duration-fast) var(--token-ease-in) forwards;
+}
+.card.entering {
+  animation: card-enter var(--token-duration-normal) var(--token-ease-out) forwards;
+}
+
+/* ── Empty state ────────────────────────────────────────────── */
+.col-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--token-space-6);
+  color: var(--t4);
+  font-size: var(--token-size-sm);
+  flex: 1;
+  min-height: 80px;
+}
+
+/* ── Drag-and-drop target ───────────────────────────────────── */
+.col-cards.drag-over {
+  background: color-mix(in srgb, var(--ac) 6%, transparent);
+  border-radius: var(--r);
+  outline: 2px dashed var(--ac);
+  outline-offset: -2px;
+}
+
+/* ── Flag type chips (review panel) ────────────────────────── */
+.flag-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--token-space-2);
+  border-radius: var(--token-radius-full);
+  font-size: var(--token-size-xs);
+  font-weight: var(--token-weight-medium);
+}
+.flag-fact        { background: var(--token-flag-fact-bg);        color: var(--token-flag-fact-fg); }
+.flag-schema      { background: var(--token-flag-schema-bg);      color: var(--token-flag-schema-fg); }
+.flag-borderline  { background: var(--token-flag-borderline-bg);  color: var(--token-flag-borderline-fg); }
+.flag-sensitive   { background: var(--token-flag-sensitive-bg);   color: var(--token-flag-sensitive-fg); }
+.flag-consistency { background: var(--token-flag-consistency-bg); color: var(--token-flag-consistency-fg); }
+
+/* ── Severity badges ────────────────────────────────────────── */
+.sev-high { color: var(--token-severity-high); }
+.sev-mid  { color: var(--token-severity-mid); }
+.sev-low  { color: var(--token-severity-low); }

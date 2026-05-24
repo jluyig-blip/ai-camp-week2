@@ -1,0 +1,42 @@
+{
+  "name": "cs자동화",
+  "version": "0.1.0",
+  "description": "cs자동화 — agent-kanban-harness instance (multi-agent harness)",
+  "keywords": [
+    "kanban",
+    "multi-agent",
+    "claude",
+    "codex",
+    "ops",
+    "harness",
+    "telegram",
+    "incident-response"
+  ],
+  "homepage": "https://github.com/Zakedu/agent-kanban-harness",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zakedu/agent-kanban-harness.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Zakedu/agent-kanban-harness/issues"
+  },
+  "license": "MIT",
+  "main": "server/kanban.cjs",
+  "scripts": {
+    "start": "node server/kanban.cjs",
+    "dev": "node server/kanban.cjs",
+    "gate": "node lib/gate/index.cjs",
+    "watch": "node lib/watch/scheduler.cjs",
+    "watch:once": "node lib/watch/scheduler.cjs --once"
+  },
+  "dependencies": {
+    "@slack/bolt": "^4.1.0"
+  },
+  "optionalDependencies": {
+    "dotenv": "^16.4.5"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "private": true
+}
