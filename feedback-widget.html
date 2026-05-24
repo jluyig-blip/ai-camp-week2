@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>고객 피드백 + 기프트콘 추첨</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --c-bg:#fafafa;--c-surface:#fff;--c-surface-2:#f4f4f5;--c-surface-3:#e4e4e7;
+  --c-border:#e4e4e7;--c-border-2:#d4d4d8;
+  --c-text:#18181b;--c-text-2:#52525b;--c-text-3:#71717a;--c-text-4:#a1a1aa;
+  --c-accent:#059669;--c-accent-h:#047857;--c-accent-bg:#d1fae5;
+  --c-danger:#dc2626;--c-danger-bg:#fee2e2;
+  --c-warn:#f59e0b;--c-warn-bg:#fef3c7;
+  --c-gift:#8b5cf6;--c-gift-bg:#ede9fe;
+  --sh-sm:0 1px 2px rgba(0,0,0,.04);--sh-md:0 2px 8px rgba(0,0,0,.08);
+  --hdr-h:52px;
+}
+[data-theme="dark"]{
+  --c-bg:#0a0a0b;--c-surface:#18181b;--c-surface-2:#27272a;--c-surface-3:#3f3f46;
+  --c-border:#27272a;--c-border-2:#3f3f46;
+  --c-text:#fafafa;--c-text-2:#d4d4d8;--c-text-3:#a1a1aa;--c-text-4:#71717a;
+  --c-accent:#10b981;--c-accent-h:#34d399;--c-accent-bg:rgba(16,185,129,.15);
+  --c-danger:#ef4444;--c-danger-bg:rgba(239,68,68,.12);
+  --c-warn:#f59e0b;--c-warn-bg:rgba(245,158,11,.12);
+  --c-gift:#a78bfa;--c-gift-bg:rgba(139,92,246,.15);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:var(--c-bg);color:var(--c-text);font-family:'Pretendard Variable',Pretendard,-apple-system,sans-serif;font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{display:flex;flex-direction:column;overflow:hidden}
+
+.hdr{height:var(--hdr-h);padding:0 20px;border-bottom:1px solid var(--c-border);background:var(--c-surface);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.brand{font-size:14px;font-weight:700;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+.brand-dot{color:var(--c-accent)}
+.brand-badge{font-size:10px;font-family:'JetBrains Mono',monospace;font-weight:700;padding:2px 8px;border-radius:5px;background:var(--c-accent-bg);color:var(--c-accent)}
+.hdr-r{display:flex;align-items:center;gap:8px}
+.btn-icon{background:var(--c-surface);border:1px solid var(--c-border-2);color:var(--c-text-2);padding:6px 11px;border-radius:7px;font-size:11.5px;cursor:pointer;font-family:inherit;font-weight:600;text-decoration:none;display:inline-flex;align-items:center}
+.btn-icon:hover{border-color:var(--c-text-3);color:var(--c-text)}
+
+/* Layout: 3-column */
+.main{flex:1;display:flex;min-height:0;overflow:hidden}
+
+/* Left: form + CSAT */
+.left-col{width:300px;flex-shrink:0;border-right:1px solid var(--c-border);display:flex;flex-direction:column;overflow-y:auto;background:var(--c-surface)}
+.left-col::-webkit-scrollbar{width:4px}
+.left-col::-webkit-scrollbar-thumb{background:var(--c-surface-3);border-radius:9999px}
+
+/* Middle: feedback list */
+.mid-col{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden;border-right:1px solid var(--c-border)}
+
+/* Right: raffle */
+.right-col{width:300px;flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;background:var(--c-surface)}
+
+/* Panels */
+.panel-head{padding:10px 14px;border-bottom:1px solid var(--c-border);background:var(--c-surface-2);flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+.panel-head .ttl{font-size:11px;font-weight:700}
+.panel-head .meta{font-size:10px;color:var(--c-text-4);font-family:'JetBrains Mono',monospace}
+
+/* CSAT */
+.csat-section{padding:14px}
+.sec-title{font-size:10px;font-weight:800;color:var(--c-text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.csat-score{text-align:center;margin-bottom:12px}
+.csat-big{font-size:44px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--c-accent);line-height:1}
+.csat-sub{font-size:10px;color:var(--c-text-3);margin-top:3px;font-weight:600}
+.csat-bars{display:flex;flex-direction:column;gap:6px}
+.csat-row{display:flex;align-items:center;gap:7px}
+.csat-emoji{font-size:14px;width:18px;text-align:center}
+.csat-bar-wrap{flex:1;background:var(--c-surface-2);border-radius:9999px;height:7px;overflow:hidden}
+.csat-bar-fill{height:100%;border-radius:9999px;transition:width .4s ease}
+.fill-ok{background:var(--c-accent)}
+.fill-mid{background:var(--c-warn)}
+.fill-bad{background:var(--c-danger)}
+.csat-n{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;min-width:20px;text-align:right;color:var(--c-text-2)}
+.csat-pct{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--c-text-4);min-width:28px;text-align:right}
+
+/* Form */
+.form-section{padding:14px;border-top:1px solid var(--c-border)}
+.form-label{font-size:11.5px;font-weight:700;color:var(--c-text-2);margin-bottom:4px}
+.form-group{margin-bottom:10px}
+.rating-row{display:flex;gap:6px}
+.rating-btn{flex:1;padding:8px 0;border-radius:7px;border:1.5px solid var(--c-border);background:var(--c-bg);font-size:17px;cursor:pointer;text-align:center;line-height:1;transition:all .1s}
+.rating-btn:hover{transform:scale(1.06);border-color:var(--c-text-4)}
+.rating-btn.selected.sat{border-color:var(--c-accent);background:var(--c-accent-bg)}
+.rating-btn.selected.neu{border-color:var(--c-warn);background:var(--c-warn-bg)}
+.rating-btn.selected.dis{border-color:var(--c-danger);background:var(--c-danger-bg)}
+.form-input{width:100%;background:var(--c-bg);border:1.5px solid var(--c-border-2);border-radius:7px;padding:7px 10px;font-size:12.5px;color:var(--c-text);font-family:inherit}
+.form-input:focus{outline:none;border-color:var(--c-accent)}
+.form-input::placeholder{color:var(--c-text-4)}
+.phone-note{font-size:10px;color:var(--c-text-4);margin-top:3px}
+.phone-note.show-sat{display:block}
+.phone-note.hide-sat{display:none}
+.form-textarea{width:100%;background:var(--c-bg);border:1.5px solid var(--c-border-2);border-radius:7px;padding:7px 10px;font-size:12.5px;color:var(--c-text);font-family:inherit;resize:vertical;min-height:60px;line-height:1.6}
+.form-textarea:focus{outline:none;border-color:var(--c-accent)}
+.form-textarea::placeholder{color:var(--c-text-4)}
+.btn-submit{width:100%;background:var(--c-accent);color:#fff;border:none;padding:9px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-submit:hover{background:var(--c-accent-h)}
+
+/* Filter */
+.filter-bar{padding:7px 14px;background:var(--c-surface);border-bottom:1px solid var(--c-border);display:flex;align-items:center;gap:5px;flex-shrink:0;overflow-x:auto}
+.f-pill{background:var(--c-surface);border:1.5px solid var(--c-border);color:var(--c-text-2);padding:4px 10px;border-radius:9999px;font-size:11.5px;cursor:pointer;font-family:inherit;font-weight:600;white-space:nowrap}
+.f-pill:hover{border-color:var(--c-text-4)}
+.f-pill.active{background:var(--c-accent);color:#fff;border-color:var(--c-accent)}
+
+/* Feedback list */
+.feed-scroll{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:7px}
+.feed-scroll::-webkit-scrollbar{width:4px}
+.feed-scroll::-webkit-scrollbar-thumb{background:var(--c-surface-3);border-radius:9999px}
+.fcard{background:var(--c-surface-2);border:1px solid var(--c-border);border-radius:8px;padding:10px 12px}
+.fcard.winner{border-color:var(--c-gift);background:var(--c-gift-bg)}
+.fcard-top{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.fc-rating{font-size:16px;line-height:1}
+.fc-customer{font-size:12px;font-weight:700}
+.cat-badge{font-size:9.5px;font-weight:700;padding:2px 6px;border-radius:4px}
+.cat-delivery{background:#dbeafe;color:#1d4ed8}
+.cat-exchange{background:#fef3c7;color:#92400e}
+.cat-refund{background:#fee2e2;color:#dc2626}
+.cat-inquiry{background:#f0fdf4;color:#15803d}
+.cat-complaint{background:#fdf4ff;color:#7e22ce}
+[data-theme="dark"] .cat-delivery{background:rgba(59,130,246,.15);color:#93c5fd}
+[data-theme="dark"] .cat-exchange{background:rgba(245,158,11,.15);color:#fbbf24}
+[data-theme="dark"] .cat-refund{background:rgba(239,68,68,.15);color:#fca5a5}
+[data-theme="dark"] .cat-inquiry{background:rgba(16,185,129,.15);color:#6ee7b7}
+[data-theme="dark"] .cat-complaint{background:rgba(168,85,247,.15);color:#d8b4fe}
+.winner-badge{font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:9999px;background:var(--c-gift);color:#fff;margin-left:auto}
+.fc-time{font-size:10px;color:var(--c-text-4);font-family:'JetBrains Mono',monospace;margin-left:auto}
+.fc-comment{font-size:12px;line-height:1.6;color:var(--c-text-2)}
+.fc-phone{font-size:10px;color:var(--c-gift);font-family:'JetBrains Mono',monospace;font-weight:700;margin-top:4px}
+
+/* Raffle panel */
+.raffle-section{padding:14px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;flex:1}
+.raffle-section::-webkit-scrollbar{width:4px}
+.raffle-section::-webkit-scrollbar-thumb{background:var(--c-surface-3);border-radius:9999px}
+.raffle-pool{background:var(--c-gift-bg);border:1px solid var(--c-gift);border-radius:9px;padding:12px;text-align:center}
+.raffle-pool .big{font-size:32px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--c-gift);line-height:1}
+.raffle-pool .lbl{font-size:11px;color:var(--c-gift);font-weight:600;margin-top:3px}
+.raffle-pool .sub{font-size:10px;color:var(--c-text-3);margin-top:4px}
+.btn-draw{width:100%;background:var(--c-gift);color:#fff;border:none;padding:11px;border-radius:9px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:.02em;transition:background .12s}
+.btn-draw:hover{background:#7c3aed}
+.btn-draw:disabled{background:var(--c-surface-3);color:var(--c-text-4);cursor:not-allowed}
+.winner-result{background:var(--c-gift-bg);border:2px solid var(--c-gift);border-radius:10px;padding:14px;text-align:center;display:none}
+.winner-result.show{display:block}
+.wr-label{font-size:10px;font-weight:800;color:var(--c-gift);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.wr-name{font-size:22px;font-weight:800;color:var(--c-text);margin-bottom:4px}
+.wr-phone{font-size:13px;font-family:'JetBrains Mono',monospace;color:var(--c-gift);font-weight:700;margin-bottom:8px}
+.btn-confirm{background:var(--c-accent);color:#fff;border:none;padding:7px 18px;border-radius:7px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-confirm:hover{background:var(--c-accent-h)}
+.sec-title-row{display:flex;align-items:center;justify-content:space-between}
+.btn-mini{background:transparent;border:1px solid var(--c-border-2);color:var(--c-text-3);padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-mini:hover{color:var(--c-text);border-color:var(--c-text-4)}
+.winner-history{display:flex;flex-direction:column;gap:6px}
+.wh-row{background:var(--c-surface-2);border:1px solid var(--c-border);border-radius:7px;padding:8px 10px;display:flex;align-items:center;gap:8px}
+.wh-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--c-gift);font-weight:800;min-width:20px}
+.wh-name{font-size:12px;font-weight:700}
+.wh-phone{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-text-3)}
+.wh-time{font-size:10px;color:var(--c-text-4);font-family:'JetBrains Mono',monospace;margin-left:auto}
+.empty-hist{font-size:11px;color:var(--c-text-4);text-align:center;padding:20px 0;font-style:italic}
+
+#toast-stack{position:fixed;bottom:20px;right:20px;z-index:300;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="brand">
+    <span>AI Camp<span class="brand-dot">·</span>피드백 + 기프트콘</span>
+    <span class="brand-badge">CSAT</span>
+  </div>
+  <div class="hdr-r">
+    <a href="dashboard.html" class="btn-icon">← 대시보드</a>
+    <a href="kanban.html" class="btn-icon">📌 칸반</a>
+    <button class="btn-icon" onclick="toggleTheme()">☾</button>
+    <button class="btn-icon" onclick="resetData()">↻ 초기화</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- Left: CSAT + form -->
+  <div class="left-col">
+    <div class="csat-section">
+      <div class="sec-title">CSAT 요약</div>
+      <div class="csat-score">
+        <div class="csat-big" id="csat-score">0%</div>
+        <div class="csat-sub">고객 만족도</div>
+      </div>
+      <div class="csat-bars">
+        <div class="csat-row"><span class="csat-emoji">😊</span><div class="csat-bar-wrap"><div class="csat-bar-fill fill-ok" id="bar-sat" style="width:0%"></div></div><span class="csat-n" id="n-sat">0</span><span class="csat-pct" id="pct-sat">0%</span></div>
+        <div class="csat-row"><span class="csat-emoji">😐</span><div class="csat-bar-wrap"><div class="csat-bar-fill fill-mid" id="bar-neu" style="width:0%"></div></div><span class="csat-n" id="n-neu">0</span><span class="csat-pct" id="pct-neu">0%</span></div>
+        <div class="csat-row"><span class="csat-emoji">😞</span><div class="csat-bar-wrap"><div class="csat-bar-fill fill-bad" id="bar-dis" style="width:0%"></div></div><span class="csat-n" id="n-dis">0</span><span class="csat-pct" id="pct-dis">0%</span></div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="sec-title">피드백 입력</div>
+      <div class="form-group">
+        <div class="form-label">만족도</div>
+        <div class="rating-row">
+          <button class="rating-btn sat" id="rb-sat" onclick="selectRating('satisfied')">😊<div style="font-size:9px;margin-top:2px;color:var(--c-text-3);font-weight:700">만족</div></button>
+          <button class="rating-btn neu" id="rb-neu" onclick="selectRating('neutral')">😐<div style="font-size:9px;margin-top:2px;color:var(--c-text-3);font-weight:700">보통</div></button>
+          <button class="rating-btn dis" id="rb-dis" onclick="selectRating('dissatisfied')">😞<div style="font-size:9px;margin-top:2px;color:var(--c-text-3);font-weight:700">불만족</div></button>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">고객명</div>
+        <input class="form-input" id="f-customer" type="text" placeholder="이름 또는 고객 ID">
+      </div>
+      <div class="form-group">
+        <div class="form-label">핸드폰 번호 <span id="phone-opt" style="font-size:10px;color:var(--c-gift);font-weight:700">🎁 추첨 응모</span></div>
+        <input class="form-input" id="f-phone" type="text" placeholder="010-0000-0000 (추첨 응모용)">
+        <div class="phone-note" id="phone-note">😊 만족 피드백 제출 시 기프트콘 추첨에 자동 응모됩니다.</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">카테고리</div>
+        <select class="form-input" id="f-cat">
+          <option value="배송문의">배송문의</option>
+          <option value="교환/반품">교환/반품</option>
+          <option value="환불요청">환불요청</option>
+          <option value="상품문의">상품문의</option>
+          <option value="불만접수">불만접수</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <div class="form-label">한마디 (선택)</div>
+        <textarea class="form-textarea" id="f-comment" placeholder="고객 의견..."></textarea>
+      </div>
+      <button class="btn-submit" onclick="submitFeedback()">피드백 제출</button>
+    </div>
+  </div>
+
+  <!-- Middle: list -->
+  <div class="mid-col">
+    <div class="panel-head">
+      <span class="ttl">피드백 이력</span>
+      <span class="meta" id="total-lbl">0건</span>
+    </div>
+    <div class="filter-bar">
+      <button class="f-pill active" data-f="all" onclick="setFilter('all',this)">전체</button>
+      <button class="f-pill" data-f="satisfied" onclick="setFilter('satisfied',this)">😊 만족</button>
+      <button class="f-pill" data-f="neutral" onclick="setFilter('neutral',this)">😐 보통</button>
+      <button class="f-pill" data-f="dissatisfied" onclick="setFilter('dissatisfied',this)">😞 불만족</button>
+    </div>
+    <div class="feed-scroll" id="feed-list"></div>
+  </div>
+
+  <!-- Right: raffle -->
+  <div class="right-col">
+    <div class="panel-head">
+      <span class="ttl">🎁 기프트콘 추첨</span>
+      <span class="meta">만족 고객 대상</span>
+    </div>
+    <div class="raffle-section">
+      <div class="raffle-pool">
+        <div class="big" id="pool-count">0</div>
+        <div class="lbl">추첨 풀 (핸드폰 등록 만족 고객)</div>
+        <div class="sub" id="pool-sub">응모자 없음</div>
+      </div>
+      <button class="btn-draw" id="btn-draw" onclick="drawWinner()">🎰 추첨 시작!</button>
+      <div class="winner-result" id="winner-result">
+        <div class="wr-label">🎉 당첨자 발표</div>
+        <div class="wr-name" id="wr-name">—</div>
+        <div class="wr-phone" id="wr-phone">—</div>
+        <button class="btn-confirm" onclick="confirmWinner()">당첨 확정 ✓</button>
+      </div>
+      <div>
+        <div class="sec-title-row" style="margin-bottom:8px">
+          <span class="sec-title" style="margin-bottom:0">당첨 이력</span>
+          <button class="btn-mini" onclick="clearWinners()">초기화</button>
+        </div>
+        <div class="winner-history" id="winner-history"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast-stack"></div>
+
+<script>
+const LS_FEED = 'feedback-widget-v2';
+const LS_WINNERS = 'feedback-winners-v1';
+let currentFilter = 'all';
+let selectedRating = '';
+let pendingWinner = null;
+
+const SAMPLE = [
+  {id:'FB-001',rating:'satisfied', customer:'김민준',phone:'010-3812-9473',category:'배송문의',comment:'빠른 답변 감사합니다!',winner:false,ts:Date.now()-86400000*2},
+  {id:'FB-002',rating:'dissatisfied',customer:'이서연',phone:'',category:'교환/반품',comment:'교환 처리가 너무 오래 걸렸어요.',winner:false,ts:Date.now()-86400000*2+3600000},
+  {id:'FB-003',rating:'satisfied', customer:'박지호',phone:'010-7743-2291',category:'환불요청',comment:'환불이 빠르게 됐네요!',winner:false,ts:Date.now()-86400000},
+  {id:'FB-004',rating:'neutral',   customer:'최유나',phone:'',category:'상품문의',comment:'원하는 정보가 아니었어요.',winner:false,ts:Date.now()-86400000+7200000},
+  {id:'FB-005',rating:'satisfied', customer:'정우성',phone:'010-2233-8871',category:'상품문의',comment:'사이즈 안내 정확해서 잘 맞았어요.',winner:false,ts:Date.now()-3600000*5},
+  {id:'FB-006',rating:'satisfied', customer:'한소희',phone:'010-6612-3348',category:'배송문의',comment:'',winner:false,ts:Date.now()-3600000*3},
+  {id:'FB-007',rating:'dissatisfied',customer:'이도현',phone:'',category:'불만접수',comment:'같은 문의를 세 번 했는데 매번 다른 답변이 왔어요.',winner:false,ts:Date.now()-3600000*2},
+  {id:'FB-008',rating:'neutral',   customer:'오정세',phone:'',category:'교환/반품',comment:'처리는 됐는데 메시지가 딱딱해요.',winner:false,ts:Date.now()-1800000},
+];
+
+function loadFeed(){ const s=localStorage.getItem(LS_FEED); return s?JSON.parse(s):SAMPLE.map(d=>({...d})); }
+function saveFeed(d){ localStorage.setItem(LS_FEED,JSON.stringify(d)); }
+function loadWinners(){ const s=localStorage.getItem(LS_WINNERS); return s?JSON.parse(s):[]; }
+function saveWinners(d){ localStorage.setItem(LS_WINNERS,JSON.stringify(d)); }
+function nextId(data){ return 'FB-'+(data.length+1).toString().padStart(3,'0'); }
+const RE={satisfied:'😊',neutral:'😐',dissatisfied:'😞'};
+const CAT_CLS={'배송문의':'cat-delivery','교환/반품':'cat-exchange','환불요청':'cat-refund','상품문의':'cat-inquiry','불만접수':'cat-complaint'};
+function timeDiff(ts){const m=Math.floor((Date.now()-ts)/60000);if(m<1)return '방금';if(m<60)return m+'분 전';const h=Math.floor(m/60);if(h<24)return h+'시간 전';return Math.floor(h/24)+'일 전';}
+function esc(t){const d=document.createElement('div');d.textContent=t||'';return d.innerHTML;}
+
+function selectRating(r){
+  selectedRating=r;
+  ['sat','neu','dis'].forEach(k=>document.getElementById('rb-'+k).classList.remove('selected'));
+  const m={satisfied:'sat',neutral:'neu',dissatisfied:'dis'};
+  document.getElementById('rb-'+m[r]).classList.add('selected');
+}
+function setFilter(f,el){
+  currentFilter=f;
+  document.querySelectorAll('.f-pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  renderAll();
+}
+
+function renderAll(){
+  const data=loadFeed();
+  const sat=data.filter(d=>d.rating==='satisfied').length;
+  const neu=data.filter(d=>d.rating==='neutral').length;
+  const dis=data.filter(d=>d.rating==='dissatisfied').length;
+  const total=Math.max(data.length,1);
+  document.getElementById('csat-score').textContent=Math.round(sat/total*100)+'%';
+  document.getElementById('n-sat').textContent=sat;
+  document.getElementById('n-neu').textContent=neu;
+  document.getElementById('n-dis').textContent=dis;
+  document.getElementById('pct-sat').textContent=Math.round(sat/total*100)+'%';
+  document.getElementById('pct-neu').textContent=Math.round(neu/total*100)+'%';
+  document.getElementById('pct-dis').textContent=Math.round(dis/total*100)+'%';
+  document.getElementById('bar-sat').style.width=Math.round(sat/total*100)+'%';
+  document.getElementById('bar-neu').style.width=Math.round(neu/total*100)+'%';
+  document.getElementById('bar-dis').style.width=Math.round(dis/total*100)+'%';
+
+  // Raffle pool
+  const pool=data.filter(d=>d.rating==='satisfied'&&d.phone&&!d.winner);
+  document.getElementById('pool-count').textContent=pool.length;
+  document.getElementById('pool-sub').textContent=pool.length?pool.length+'명 응모 중':'응모자 없음';
+  document.getElementById('btn-draw').disabled=pool.length===0;
+
+  // Feed list
+  const filtered=currentFilter==='all'?data:data.filter(d=>d.rating===currentFilter);
+  document.getElementById('total-lbl').textContent=filtered.length+'건';
+  const el=document.getElementById('feed-list');
+  if(!filtered.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--c-text-4);font-size:12px">피드백이 없습니다.</div>';return;}
+  el.innerHTML=[...filtered].reverse().map(d=>`
+    <div class="fcard${d.winner?' winner':''}">
+      <div class="fcard-top">
+        <span class="fc-rating">${RE[d.rating]||'?'}</span>
+        <span class="fc-customer">${esc(d.customer)}</span>
+        <span class="cat-badge ${CAT_CLS[d.category]||'cat-inquiry'}">${esc(d.category)}</span>
+        ${d.winner?'<span class="winner-badge">🎁 당첨</span>':''}
+        <span class="fc-time">${timeDiff(d.ts)}</span>
+      </div>
+      ${d.comment?`<div class="fc-comment">${esc(d.comment)}</div>`:''}
+      ${d.phone&&d.rating==='satisfied'?`<div class="fc-phone">📱 ${esc(d.phone)}</div>`:''}
+    </div>
+  `).join('');
+
+  // Winner history
+  const winners=loadWinners();
+  const wh=document.getElementById('winner-history');
+  if(!winners.length){wh.innerHTML='<div class="empty-hist">당첨자 없음</div>';return;}
+  wh.innerHTML=[...winners].reverse().map((w,i)=>`
+    <div class="wh-row">
+      <span class="wh-num">#${winners.length-i}</span>
+      <div><div class="wh-name">${esc(w.customer)}</div><div class="wh-phone">${esc(w.phone)}</div></div>
+      <span class="wh-time">${timeDiff(w.ts)}</span>
+    </div>
+  `).join('');
+}
+
+function submitFeedback(){
+  if(!selectedRating){showToast('만족도를 선택해주세요','err');return;}
+  const customer=(document.getElementById('f-customer').value||'').trim()||'익명';
+  const phone=(document.getElementById('f-phone').value||'').trim();
+  const category=document.getElementById('f-cat').value;
+  const comment=(document.getElementById('f-comment').value||'').trim();
+  const data=loadFeed();
+  data.push({id:nextId(data),rating:selectedRating,customer,phone,category,comment,winner:false,ts:Date.now()});
+  saveFeed(data);
+  document.getElementById('f-customer').value='';
+  document.getElementById('f-phone').value='';
+  document.getElementById('f-comment').value='';
+  selectedRating='';
+  ['sat','neu','dis'].forEach(k=>document.getElementById('rb-'+k).classList.remove('selected'));
+  renderAll();
+  const msg=selectedRating==='satisfied'&&phone?'피드백 제출 완료! 🎁 추첨 응모되었습니다.':'피드백 제출 완료';
+  showToast(msg,'ok');
+}
+
+function drawWinner(){
+  const data=loadFeed();
+  const pool=data.filter(d=>d.rating==='satisfied'&&d.phone&&!d.winner);
+  if(!pool.length){showToast('추첨 풀이 비어 있습니다','err');return;}
+  pendingWinner=pool[Math.floor(Math.random()*pool.length)];
+  document.getElementById('wr-name').textContent=pendingWinner.customer;
+  document.getElementById('wr-phone').textContent=pendingWinner.phone;
+  document.getElementById('winner-result').classList.add('show');
+}
+
+function confirmWinner(){
+  if(!pendingWinner) return;
+  const data=loadFeed();
+  const d=data.find(x=>x.id===pendingWinner.id);
+  if(d) d.winner=true;
+  saveFeed(data);
+  const winners=loadWinners();
+  winners.push({customer:pendingWinner.customer,phone:pendingWinner.phone,ts:Date.now()});
+  saveWinners(winners);
+  pendingWinner=null;
+  document.getElementById('winner-result').classList.remove('show');
+  renderAll();
+  showToast('🎁 당첨 확정!','ok');
+}
+
+function clearWinners(){ localStorage.removeItem(LS_WINNERS); renderAll(); showToast('당첨 이력 초기화','ok'); }
+function resetData(){ localStorage.removeItem(LS_FEED); localStorage.removeItem(LS_WINNERS); renderAll(); showToast('초기화 완료','ok'); }
+function toggleTheme(){ const r=document.documentElement; r.dataset.theme=r.dataset.theme==='dark'?'':'dark'; }
+function showToast(msg,type){
+  let c=document.getElementById('toast-stack');
+  const t=document.createElement('div'); t.textContent=msg;
+  t.style.cssText=`padding:9px 14px;border-radius:8px;font-size:12px;font-weight:600;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.2);max-width:300px;pointer-events:auto;background:${type==='ok'?'#059669':'#dc2626'}`;
+  c.appendChild(t); setTimeout(()=>{ t.style.transition='opacity .3s'; t.style.opacity='0'; setTimeout(()=>t.remove(),300); },2500);
+}
+renderAll();
+</script>
+</body>
+</html>

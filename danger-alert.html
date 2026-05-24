@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>위험 케이스 알림</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --c-bg:#fafafa;--c-surface:#fff;--c-surface-2:#f4f4f5;--c-surface-3:#e4e4e7;
+  --c-border:#e4e4e7;--c-border-2:#d4d4d8;
+  --c-text:#18181b;--c-text-2:#52525b;--c-text-3:#71717a;--c-text-4:#a1a1aa;
+  --c-accent:#059669;--c-accent-h:#047857;--c-accent-bg:#d1fae5;
+  --c-danger:#dc2626;--c-danger-h:#b91c1c;--c-danger-bg:#fee2e2;
+  --c-warn:#f59e0b;--c-warn-bg:#fef3c7;
+  --c-purple:#7c3aed;--c-purple-bg:#ede9fe;
+  --sh-sm:0 1px 2px rgba(0,0,0,.04);--sh-md:0 2px 8px rgba(0,0,0,.08);
+  --hdr-h:52px;
+}
+[data-theme="dark"]{
+  --c-bg:#0a0a0b;--c-surface:#18181b;--c-surface-2:#27272a;--c-surface-3:#3f3f46;
+  --c-border:#27272a;--c-border-2:#3f3f46;
+  --c-text:#fafafa;--c-text-2:#d4d4d8;--c-text-3:#a1a1aa;--c-text-4:#71717a;
+  --c-accent:#10b981;--c-accent-h:#34d399;--c-accent-bg:rgba(16,185,129,.15);
+  --c-danger:#ef4444;--c-danger-h:#dc2626;--c-danger-bg:rgba(239,68,68,.12);
+  --c-warn:#f59e0b;--c-warn-bg:rgba(245,158,11,.12);
+  --c-purple:#a78bfa;--c-purple-bg:rgba(124,58,237,.15);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:var(--c-bg);color:var(--c-text);font-family:'Pretendard Variable',Pretendard,-apple-system,sans-serif;font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{display:flex;flex-direction:column;overflow:hidden}
+
+.hdr{height:var(--hdr-h);padding:0 20px;border-bottom:1px solid var(--c-border);background:var(--c-surface);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.brand{font-size:14px;font-weight:700;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+.brand-dot{color:var(--c-danger)}
+.brand-badge{font-size:10px;font-family:'JetBrains Mono',monospace;font-weight:700;padding:2px 8px;border-radius:5px;background:var(--c-danger-bg);color:var(--c-danger);display:flex;align-items:center;gap:5px}
+.badge-pulse{width:6px;height:6px;border-radius:50%;background:var(--c-danger);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hdr-r{display:flex;align-items:center;gap:8px}
+.stats-row{display:flex;gap:1px;border:1px solid var(--c-border);border-radius:8px;overflow:hidden;background:var(--c-border)}
+.stat{padding:4px 14px;background:var(--c-surface);text-align:center}
+.stat .n{font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace;line-height:1.2}
+.stat .l{font-size:9px;color:var(--c-text-3);text-transform:uppercase;letter-spacing:.06em}
+.btn-icon{background:var(--c-surface);border:1px solid var(--c-border-2);color:var(--c-text-2);padding:6px 11px;border-radius:7px;font-size:11.5px;cursor:pointer;font-family:inherit;font-weight:600;text-decoration:none;display:inline-flex;align-items:center}
+.btn-icon:hover{border-color:var(--c-text-3);color:var(--c-text)}
+
+/* Filter */
+.filter-bar{padding:8px 20px;background:var(--c-surface);border-bottom:1px solid var(--c-border);display:flex;align-items:center;gap:6px;flex-shrink:0}
+.f-pill{background:var(--c-surface);border:1.5px solid var(--c-border);color:var(--c-text-2);padding:5px 12px;border-radius:9999px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:600;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.f-pill:hover{border-color:var(--c-text-4)}
+.f-pill.active{background:var(--c-danger);color:#fff;border-color:var(--c-danger)}
+.f-cnt{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;padding:0 5px;border-radius:9999px}
+.f-pill.active .f-cnt{background:rgba(255,255,255,.25);color:#fff}
+.f-pill:not(.active) .f-cnt{background:var(--c-surface-3);color:var(--c-text-3)}
+.f-search{margin-left:auto;background:var(--c-bg);border:1.5px solid var(--c-border-2);border-radius:7px;padding:5px 10px;font-size:12px;color:var(--c-text);font-family:inherit;width:200px}
+.f-search:focus{outline:none;border-color:var(--c-danger)}
+.f-search::placeholder{color:var(--c-text-4)}
+
+/* Main layout */
+.main{flex:1;display:flex;min-height:0;overflow:hidden}
+.alert-list-wrap{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:10px}
+.alert-list-wrap::-webkit-scrollbar{width:5px}
+.alert-list-wrap::-webkit-scrollbar-thumb{background:var(--c-surface-3);border-radius:9999px}
+
+/* Alert card */
+.acard{background:var(--c-surface);border:1px solid var(--c-border);border-radius:10px;overflow:hidden;box-shadow:var(--sh-sm);transition:box-shadow .12s}
+.acard:hover{box-shadow:var(--sh-md)}
+.acard.sev-critical{border-left:4px solid var(--c-danger)}
+.acard.sev-high{border-left:4px solid var(--c-warn)}
+.acard.sev-medium{border-left:4px solid #8b5cf6}
+.acard.resolved{border-left-color:var(--c-accent);opacity:.7}
+.acard-head{padding:10px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--c-border);background:var(--c-surface-2)}
+.sev-badge{font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:.04em}
+.sev-critical{background:var(--c-danger-bg);color:var(--c-danger)}
+.sev-high{background:var(--c-warn-bg);color:var(--c-warn)}
+.sev-medium{background:#ede9fe;color:#7c3aed}
+[data-theme="dark"] .sev-medium{background:rgba(124,58,237,.15);color:#a78bfa}
+.alert-type{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:var(--c-surface-3);color:var(--c-text-2)}
+.a-id{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--c-text-4);font-weight:700}
+.a-time{margin-left:auto;font-size:10px;color:var(--c-text-4);font-family:'JetBrains Mono',monospace}
+.a-status{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:9999px;flex-shrink:0}
+.s-active{background:var(--c-danger-bg);color:var(--c-danger)}
+.s-assigned{background:var(--c-warn-bg);color:var(--c-warn)}
+.s-resolved{background:var(--c-accent-bg);color:var(--c-accent)}
+
+.acard-body{padding:12px 14px}
+.a-trigger{font-size:13px;font-weight:700;color:var(--c-text);margin-bottom:6px;display:flex;align-items:flex-start;gap:6px}
+.a-trigger .icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.a-detail{font-size:12px;color:var(--c-text-2);line-height:1.6;background:var(--c-bg);border:1px solid var(--c-border);border-radius:7px;padding:9px 11px;margin-bottom:8px;white-space:pre-wrap;word-break:break-word}
+.a-meta-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.a-meta-item{font-size:10.5px;color:var(--c-text-3);display:flex;gap:4px;align-items:center}
+.a-meta-item .lbl{font-weight:800;text-transform:uppercase;font-size:9.5px;letter-spacing:.04em}
+.a-meta-item .val{font-family:'JetBrains Mono',monospace;color:var(--c-text-2);font-weight:600}
+.a-tags{display:flex;gap:5px;flex-wrap:wrap}
+.a-tag{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:4px;background:var(--c-surface-2);color:var(--c-text-3)}
+.a-tag.t-legal{background:#fdf4ff;color:#7e22ce}
+.a-tag.t-billing{background:var(--c-danger-bg);color:var(--c-danger)}
+.a-tag.t-media{background:var(--c-warn-bg);color:var(--c-warn)}
+.a-tag.t-repeat{background:var(--c-purple-bg);color:var(--c-purple)}
+[data-theme="dark"] .a-tag.t-legal{background:rgba(168,85,247,.15);color:#d8b4fe}
+
+.acard-foot{padding:8px 14px;border-top:1px solid var(--c-border);background:var(--c-surface-2);display:flex;align-items:center;justify-content:space-between}
+.action-btns{display:flex;gap:6px}
+.btn-assign{background:var(--c-warn);color:#fff;border:none;padding:5px 13px;border-radius:6px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-assign:hover{background:#d97706}
+.btn-escalate{background:var(--c-purple);color:#fff;border:none;padding:5px 13px;border-radius:6px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-escalate:hover{background:#6d28d9}
+.btn-resolve{background:var(--c-accent);color:#fff;border:none;padding:5px 13px;border-radius:6px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-resolve:hover{background:var(--c-accent-h)}
+.btn-ghost-sm{background:transparent;color:var(--c-text-3);border:1.5px solid var(--c-border-2);padding:5px 11px;border-radius:6px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-ghost-sm:hover{color:var(--c-text);border-color:var(--c-text-4)}
+.resolved-lbl{font-size:11px;color:var(--c-accent);font-weight:700}
+
+/* Timeline sidebar */
+.timeline{width:280px;flex-shrink:0;border-left:1px solid var(--c-border);background:var(--c-surface);display:flex;flex-direction:column;overflow:hidden}
+.tl-head{padding:10px 14px;border-bottom:1px solid var(--c-border);background:var(--c-surface-2);flex-shrink:0}
+.tl-head .ttl{font-size:11px;font-weight:700}
+.tl-scroll{flex:1;overflow-y:auto;padding:10px 14px}
+.tl-scroll::-webkit-scrollbar{width:4px}
+.tl-scroll::-webkit-scrollbar-thumb{background:var(--c-surface-3);border-radius:9999px}
+.tl-item{padding:8px 0;border-bottom:1px solid var(--c-border);display:flex;gap:8px;align-items:flex-start}
+.tl-item:last-child{border-bottom:0}
+.tl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.tl-body .t{font-size:11.5px;font-weight:500;color:var(--c-text);line-height:1.4}
+.tl-body .m{font-size:10px;color:var(--c-text-4);font-family:'JetBrains Mono',monospace;margin-top:2px}
+
+#toast-stack{position:fixed;bottom:20px;right:20px;z-index:300;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="brand">
+    <span>AI Camp<span class="brand-dot">·</span>위험 케이스</span>
+    <span class="brand-badge"><span class="badge-pulse"></span>LIVE</span>
+  </div>
+  <div class="hdr-r">
+    <div class="stats-row">
+      <div class="stat"><div class="n" style="color:var(--c-danger)" id="st-active">0</div><div class="l">활성</div></div>
+      <div class="stat"><div class="n" style="color:var(--c-warn)" id="st-assigned">0</div><div class="l">담당배정</div></div>
+      <div class="stat"><div class="n" style="color:var(--c-accent)" id="st-resolved">0</div><div class="l">해결</div></div>
+    </div>
+    <a href="dashboard.html" class="btn-icon">← 대시보드</a>
+    <a href="kanban.html" class="btn-icon">📌 칸반</a>
+    <button class="btn-icon" onclick="addMockAlert()">+ 테스트 알림</button>
+    <button class="btn-icon" onclick="toggleTheme()">☾</button>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <button class="f-pill active" data-f="all" onclick="setFilter('all',this)">전체 <span class="f-cnt" id="cnt-all">0</span></button>
+  <button class="f-pill" data-f="active" onclick="setFilter('active',this)">활성 <span class="f-cnt" id="cnt-active">0</span></button>
+  <button class="f-pill" data-f="assigned" onclick="setFilter('assigned',this)">담당배정 <span class="f-cnt" id="cnt-assigned">0</span></button>
+  <button class="f-pill" data-f="resolved" onclick="setFilter('resolved',this)">해결 <span class="f-cnt" id="cnt-resolved">0</span></button>
+  <input class="f-search" type="text" id="search-input" placeholder="고객명·주문번호 검색..." oninput="renderAll()">
+</div>
+
+<div class="main">
+  <div class="alert-list-wrap" id="alert-list"></div>
+
+  <div class="timeline">
+    <div class="tl-head"><div class="ttl">📡 탐지 타임라인</div></div>
+    <div class="tl-scroll" id="tl-list"></div>
+  </div>
+</div>
+
+<div id="toast-stack"></div>
+
+<script>
+const LS = 'danger-alert-v1';
+let currentFilter = 'all';
+
+const ALERT_TYPES = {
+  legal:'법적 위협',billing:'이중청구·결제오류',media:'SNS 확산 위협',repeat:'반복 불만 (3회↑)',escalation:'에스컬레이션 요청',quality:'품질 불량 다수'
+};
+const TYPE_ICON = {legal:'⚖️',billing:'💳',media:'📢',repeat:'🔁',escalation:'🆘',quality:'⚠️'};
+const TAG_CLS = {legal:'t-legal',billing:'t-billing',media:'t-media',repeat:'t-repeat'};
+
+const SAMPLE = [
+  {id:'ALT-001',severity:'critical',type:'legal',status:'active',customer:'김대호',orderId:'ORD-23500',
+   trigger:'고객이 법적 조치를 예고함 — 이중 청구 2주 미해결',
+   detail:'고객 메시지: "2주가 지났는데 환불이 안 됩니다. 소비자보호원에 신고하고 법적 조치를 취하겠습니다."\n\n탐지: 법률/법적/소비자보호원 키워드 감지',
+   tags:['legal','billing'],ts:Date.now()-86400000},
+  {id:'ALT-002',severity:'critical',type:'billing',status:'assigned',customer:'박민국',orderId:'ORD-24100',
+   trigger:'동일 주문 결제 3회 중복 감지',
+   detail:'결제 로그 분석 결과 ORD-24100에 대해 15:23, 15:24, 15:25 총 3회 결제 처리됨.\n\n합계: ₩127,500 × 3 = ₩382,500 오청구',
+   tags:['billing'],ts:Date.now()-3600000*3},
+  {id:'ALT-003',severity:'high',type:'media',status:'active',customer:'이수진',orderId:'ORD-23980',
+   trigger:'SNS 확산 위협 — 인스타그램 게시 예고',
+   detail:'고객 메시지: "답장도 없고 처리도 안 되네요. 제 팔로워 5만명한테 이 상황 공유할게요. 기다리고 있을게요."\n\n탐지: SNS/팔로워/공유 키워드 감지',
+   tags:['media'],ts:Date.now()-3600000*2},
+  {id:'ALT-004',severity:'high',type:'repeat',status:'active',customer:'최상원',orderId:'ORD-23701',
+   trigger:'동일 고객 3회 이상 반복 불만 접수',
+   detail:'접수 이력:\n- 2025-05-20: 배송 지연 불만\n- 2025-05-22: 재접수 — 답변 불만족\n- 2025-05-24: 3차 접수 — 환불 요청 추가\n\n탐지: 동일 고객 3회↑ 반복 패턴',
+   tags:['repeat'],ts:Date.now()-1800000},
+  {id:'ALT-005',severity:'medium',type:'escalation',status:'resolved',customer:'정현아',orderId:'ORD-23650',
+   trigger:'담당자 에스컬레이션 요청 — 해결 완료',
+   detail:'오배송 건 직접 배상 합의 완료. 고객 만족 확인.',
+   tags:[],ts:Date.now()-86400000*2},
+  {id:'ALT-006',severity:'high',type:'quality',status:'active',customer:'(다수)',orderId:'—',
+   trigger:'동일 상품 불량 신고 5건 집중 — SKU: HOOD-NAVY-L',
+   detail:'최근 24시간 내 기모 후드 집업 네이비 L (SKU: HOOD-NAVY-L) 불량 신고 5건 접수.\n\n유형: 박음질 불량 3건, 지퍼 불량 2건\n\n권고: 해당 SKU 판매 중지 검토 필요',
+   tags:['quality'],ts:Date.now()-900000},
+];
+
+function loadData(){ const s=localStorage.getItem(LS); return s?JSON.parse(s):SAMPLE.map(d=>({...d,tags:[...d.tags]})); }
+function saveData(d){ localStorage.setItem(LS,JSON.stringify(d)); }
+function timeDiff(ts){ const m=Math.floor((Date.now()-ts)/60000); if(m<1)return '방금'; if(m<60)return m+'분 전'; const h=Math.floor(m/60); if(h<24)return h+'시간 전'; return Math.floor(h/24)+'일 전'; }
+function esc(t){ const d=document.createElement('div'); d.textContent=t||''; return d.innerHTML; }
+
+function setFilter(f,el){
+  currentFilter=f;
+  document.querySelectorAll('.f-pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  renderAll();
+}
+
+function renderAll(){
+  const data=loadData();
+  const q=(document.getElementById('search-input').value||'').toLowerCase();
+  const counts={all:data.length,active:0,assigned:0,resolved:0};
+  data.forEach(d=>{ counts[d.status]=(counts[d.status]||0)+1; });
+  document.getElementById('st-active').textContent=counts.active||0;
+  document.getElementById('st-assigned').textContent=counts.assigned||0;
+  document.getElementById('st-resolved').textContent=counts.resolved||0;
+  ['all','active','assigned','resolved'].forEach(k=>{ const el=document.getElementById('cnt-'+k); if(el) el.textContent=counts[k]||0; });
+
+  let filtered=data;
+  if(currentFilter!=='all') filtered=filtered.filter(d=>d.status===currentFilter);
+  if(q) filtered=filtered.filter(d=>(d.customer+d.orderId+d.trigger).toLowerCase().includes(q));
+  filtered.sort((a,b)=>{const so={critical:0,high:1,medium:2}; return (so[a.severity]||2)-(so[b.severity]||2)||(b.ts-a.ts);});
+
+  const el=document.getElementById('alert-list');
+  if(!filtered.length){ el.innerHTML='<div style="text-align:center;padding:60px;color:var(--c-text-4);font-size:12px">위험 케이스가 없습니다.</div>'; return; }
+  el.innerHTML=filtered.map(d=>`
+    <div class="acard sev-${d.severity} ${d.status==='resolved'?'resolved':''}">
+      <div class="acard-head">
+        <span class="sev-badge sev-${d.severity}">${{critical:'🔴 긴급',high:'🟠 높음',medium:'🟡 중간'}[d.severity]||d.severity}</span>
+        <span class="alert-type">${TYPE_ICON[d.type]||''} ${ALERT_TYPES[d.type]||d.type}</span>
+        <span class="a-id">${esc(d.id)}</span>
+        <span class="a-time">${timeDiff(d.ts)}</span>
+        <span class="a-status ${{active:'s-active',assigned:'s-assigned',resolved:'s-resolved'}[d.status]||'s-active'}">${{active:'활성',assigned:'담당배정',resolved:'해결'}[d.status]||d.status}</span>
+      </div>
+      <div class="acard-body">
+        <div class="a-trigger"><span class="icon">⚡</span><span>${esc(d.trigger)}</span></div>
+        <div class="a-detail">${esc(d.detail)}</div>
+        <div class="a-meta-row">
+          <div class="a-meta-item"><span class="lbl">고객</span><span class="val">${esc(d.customer)}</span></div>
+          <div class="a-meta-item"><span class="lbl">주문</span><span class="val">${esc(d.orderId)}</span></div>
+        </div>
+        ${d.tags.length?`<div class="a-tags">${d.tags.map(t=>`<span class="a-tag ${TAG_CLS[t]||''}">${esc(t)}</span>`).join('')}</div>`:''}
+      </div>
+      <div class="acard-foot">
+        <div></div>
+        <div class="action-btns">
+          ${d.status==='resolved'
+            ? `<span class="resolved-lbl">✓ 해결 완료</span>`
+            : `${d.status==='active'?`<button class="btn-assign" onclick="assignAlert('${d.id}')">담당 배정</button>`:''}
+               <button class="btn-escalate" onclick="escalateAlert('${d.id}')">에스컬레이션</button>
+               <button class="btn-resolve" onclick="resolveAlert('${d.id}')">해결 처리</button>`
+          }
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  // Timeline
+  const tl=document.getElementById('tl-list');
+  const sorted=[...data].sort((a,b)=>b.ts-a.ts).slice(0,12);
+  tl.innerHTML=sorted.map(d=>`
+    <div class="tl-item">
+      <div class="tl-dot" style="background:${{critical:'#dc2626',high:'#f59e0b',medium:'#7c3aed'}[d.severity]||'#a1a1aa'}"></div>
+      <div class="tl-body">
+        <div class="t">${esc(d.id)} ${TYPE_ICON[d.type]||''} ${esc(d.customer)}</div>
+        <div class="m">${timeDiff(d.ts)} · ${{active:'활성',assigned:'배정',resolved:'해결'}[d.status]||d.status}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function assignAlert(id){
+  const data=loadData(); const d=data.find(x=>x.id===id); if(!d||d.status==='resolved') return;
+  d.status='assigned'; saveData(data); renderAll(); showToast(`${id} 담당자 배정`,'warn');
+}
+function escalateAlert(id){
+  const data=loadData(); const d=data.find(x=>x.id===id); if(!d) return;
+  showToast(`${id} 에스컬레이션 전송 완료`,'warn');
+}
+function resolveAlert(id){
+  const data=loadData(); const d=data.find(x=>x.id===id); if(!d) return;
+  d.status='resolved'; saveData(data); renderAll(); showToast(`${id} 해결 처리`,'ok');
+}
+
+let mockCount=7;
+function addMockAlert(){
+  const data=loadData();
+  const sevs=['critical','high','medium'];
+  const types=Object.keys(ALERT_TYPES);
+  const sev=sevs[Math.floor(Math.random()*sevs.length)];
+  const type=types[Math.floor(Math.random()*types.length)];
+  data.unshift({id:`ALT-${String(mockCount++).padStart(3,'0')}`,severity:sev,type,status:'active',customer:'테스트고객',orderId:`ORD-${Math.floor(Math.random()*99999)}`,trigger:`[테스트] ${ALERT_TYPES[type]} 탐지`,detail:'자동 생성된 테스트 알림입니다.',tags:[type in TAG_CLS?type:''],ts:Date.now()});
+  saveData(data); renderAll(); showToast('테스트 알림 추가됨','warn');
+}
+function resetData(){ localStorage.removeItem(LS); renderAll(); showToast('초기화 완료','ok'); }
+function toggleTheme(){ const r=document.documentElement; r.dataset.theme=r.dataset.theme==='dark'?'':'dark'; }
+function showToast(msg,type){
+  let c=document.getElementById('toast-stack');
+  const colors={ok:'#059669',warn:'#f59e0b',err:'#dc2626'};
+  const t=document.createElement('div'); t.textContent=msg;
+  t.style.cssText=`padding:9px 14px;border-radius:8px;font-size:12px;font-weight:600;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.2);max-width:280px;pointer-events:auto;background:${colors[type]||colors.ok}`;
+  c.appendChild(t); setTimeout(()=>{ t.style.transition='opacity .3s'; t.style.opacity='0'; setTimeout(()=>t.remove(),300); },2500);
+}
+renderAll();
+</script>
+</body>
+</html>

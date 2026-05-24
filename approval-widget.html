@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>담당자 승인 위젯</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --c-bg:#fafafa;--c-surface:#fff;--c-surface-2:#f4f4f5;--c-surface-3:#e4e4e7;
+  --c-border:#e4e4e7;--c-border-2:#d4d4d8;
+  --c-text:#18181b;--c-text-2:#52525b;--c-text-3:#71717a;--c-text-4:#a1a1aa;
+  --c-accent:#059669;--c-accent-h:#047857;--c-accent-bg:#d1fae5;
+  --c-danger:#dc2626;--c-danger-bg:#fee2e2;
+  --c-warn:#f59e0b;--c-warn-bg:#fef3c7;
+  --sh-sm:0 1px 2px rgba(0,0,0,.04);--sh-md:0 2px 8px rgba(0,0,0,.08);
+  --hdr-h:52px;
+}
+[data-theme="dark"]{
+  --c-bg:#0a0a0b;--c-surface:#18181b;--c-surface-2:#27272a;--c-surface-3:#3f3f46;
+  --c-border:#27272a;--c-border-2:#3f3f46;
+  --c-text:#fafafa;--c-text-2:#d4d4d8;--c-text-3:#a1a1aa;--c-text-4:#71717a;
+  --c-accent:#10b981;--c-accent-h:#34d399;--c-accent-bg:rgba(16,185,129,.15);
+  --c-danger:#ef4444;--c-danger-bg:rgba(239,68,68,.12);
+  --c-warn:#f59e0b;--c-warn-bg:rgba(245,158,11,.12);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:var(--c-bg);color:var(--c-text);font-family:'Pretendard Variable',Pretendard,-apple-system,sans-serif;font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{display:flex;flex-direction:column;overflow:hidden}
+
+/* Header */
+.hdr{height:var(--hdr-h);padding:0 20px;border-bottom:1px solid var(--c-border);background:var(--c-surface);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.brand{font-size:14px;font-weight:700;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+.brand-dot{color:var(--c-accent)}
+.brand-badge{font-size:10px;font-family:'JetBrains Mono',monospace;font-weight:700;padding:2px 8px;border-radius:5px;background:var(--c-warn-bg);color:var(--c-warn)}
+.hdr-r{display:flex;align-items:center;gap:8px}
+.stats-row{display:flex;gap:1px;border:1px solid var(--c-border);border-radius:8px;overflow:hidden;background:var(--c-border)}
+.stat{padding:4px 14px;background:var(--c-surface);text-align:center}
+.stat .n{font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace;line-height:1.2}
+.stat .n.pending-n{color:var(--c-warn)}
+.stat .n.ok-n{color:var(--c-accent)}
+.stat .n.rej-n{color:var(--c-danger)}
+.stat .l{font-size:9px;color:var(--c-text-3);text-transform:uppercase;letter-spacing:.06em}
+.btn-icon{background:var(--c-surface);border:1px solid var(--c-border-2);color:var(--c-text-2);padding:6px 11px;border-radius:7px;font-size:11.5px;cursor:pointer;font-family:inherit;font-weight:600}
+.btn-icon:hover{border-color:var(--c-text-3);color:var(--c-text)}
+
+/* Filter */
+.filter-bar{padding:8px 20px;background:var(--c-surface);border-bottom:1px solid var(--c-border);display:flex;align-items:center;gap:6px;flex-shrink:0}
+.f-pill{background:var(--c-surface);border:1.5px solid var(--c-border);color:var(--c-text-2);padding:5px 12px;border-radius:9999px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:600;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.f-pill:hover{border-color:var(--c-text-4);color:var(--c-text)}
+.f-pill.active{background:var(--c-accent);color:#fff;border-color:var(--c-accent)}
+.f-cnt{background:rgba(255,255,255,.25);color:#fff;padding:0 6px;border-radius:9999px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700}
+.f-pill:not(.active) .f-cnt{background:var(--c-surface-3);color:var(--c-text-3)}
+.f-search{margin-left:auto;background:var(--c-bg);border:1.5px solid var(--c-border-2);border-radius:7px;padding:5px 10px;font-size:12px;color:var(--c-text);font-family:inherit;width:200px}
+.f-search:focus{outline:none;border-color:var(--c-accent)}
+.f-search::placeholder{color:var(--c-text-4)}
+
+/* Main content */
+.main{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:10px}
+.main::-webkit-scrollbar{width:5px}
+.main::-webkit-scrollbar-thumb{background:var(--c-surface-3);border-radius:9999px}
+
+/* Approval card */
+.acard{background:var(--c-surface);border:1px solid var(--c-border);border-radius:10px;overflow:hidden;box-shadow:var(--sh-sm);transition:box-shadow .12s}
+.acard:hover{box-shadow:var(--sh-md)}
+.acard.status-approved{border-left:3px solid var(--c-accent)}
+.acard.status-rejected{border-left:3px solid var(--c-danger)}
+.acard.status-pending{border-left:3px solid var(--c-warn)}
+.acard-head{padding:10px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--c-border);background:var(--c-surface-2)}
+.acard-id{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--c-text-4);font-weight:700}
+.acard-cat{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px}
+.cat-delivery{background:#dbeafe;color:#1d4ed8}
+.cat-exchange{background:#fef3c7;color:#92400e}
+.cat-refund{background:#fee2e2;color:#dc2626}
+.cat-inquiry{background:#f0fdf4;color:#15803d}
+.cat-complaint{background:#fdf4ff;color:#7e22ce}
+[data-theme="dark"] .cat-delivery{background:rgba(59,130,246,.15);color:#93c5fd}
+[data-theme="dark"] .cat-exchange{background:rgba(245,158,11,.15);color:#fbbf24}
+[data-theme="dark"] .cat-refund{background:rgba(239,68,68,.15);color:#fca5a5}
+[data-theme="dark"] .cat-inquiry{background:rgba(16,185,129,.15);color:#6ee7b7}
+[data-theme="dark"] .cat-complaint{background:rgba(168,85,247,.15);color:#d8b4fe}
+.risk-badge{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px}
+.risk-high{background:var(--c-danger-bg);color:var(--c-danger)}
+.risk-mid{background:var(--c-warn-bg);color:var(--c-warn)}
+.risk-low{background:var(--c-accent-bg);color:var(--c-accent)}
+.acard-status{margin-left:auto;font-size:10px;font-weight:700;padding:2px 8px;border-radius:9999px}
+.s-pending{background:var(--c-warn-bg);color:var(--c-warn)}
+.s-approved{background:var(--c-accent-bg);color:var(--c-accent)}
+.s-rejected{background:var(--c-danger-bg);color:var(--c-danger)}
+.acard-body{padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.msg-block{display:flex;flex-direction:column;gap:4px}
+.msg-label{font-size:9.5px;font-weight:800;color:var(--c-text-3);text-transform:uppercase;letter-spacing:.05em}
+.msg-box{background:var(--c-bg);border:1px solid var(--c-border);border-radius:7px;padding:9px 11px;font-size:12px;line-height:1.6;color:var(--c-text-2);min-height:70px;white-space:pre-wrap;word-break:break-word}
+.msg-box.draft{border-color:var(--c-accent);background:var(--c-accent-bg);color:var(--c-text)}
+.acard-foot{padding:8px 14px;border-top:1px solid var(--c-border);display:flex;align-items:center;justify-content:space-between;background:var(--c-surface-2)}
+.customer-info{font-size:10.5px;color:var(--c-text-3);font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:8px}
+.customer-info span{color:var(--c-text-2);font-weight:600}
+.action-btns{display:flex;gap:6px}
+.btn-approve{background:var(--c-accent);color:#fff;border:none;padding:5px 14px;border-radius:6px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .12s}
+.btn-approve:hover{background:var(--c-accent-h)}
+.btn-reject{background:transparent;color:var(--c-danger);border:1.5px solid var(--c-danger);padding:5px 14px;border-radius:6px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .12s}
+.btn-reject:hover{background:var(--c-danger);color:#fff}
+.btn-edit{background:transparent;color:var(--c-text-2);border:1.5px solid var(--c-border-2);padding:5px 11px;border-radius:6px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .12s}
+.btn-edit:hover{border-color:var(--c-text-3);color:var(--c-text)}
+.btn-done-lbl{font-size:11px;color:var(--c-text-3);font-weight:600;padding:5px 0}
+
+/* Edit overlay */
+.edit-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.4);z-index:100;align-items:flex-start;justify-content:center;padding:60px 20px;overflow-y:auto}
+.edit-overlay.open{display:flex}
+.edit-modal{background:var(--c-surface);border-radius:12px;padding:20px;width:100%;max-width:600px;box-shadow:0 8px 32px rgba(0,0,0,.18)}
+.edit-modal h3{font-size:14px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.edit-modal textarea{width:100%;background:var(--c-bg);border:1.5px solid var(--c-border-2);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--c-text);font-family:inherit;resize:vertical;min-height:120px;line-height:1.6}
+.edit-modal textarea:focus{outline:none;border-color:var(--c-accent)}
+.edit-modal-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+.btn-primary{background:var(--c-accent);color:#fff;border:none;padding:7px 18px;border-radius:7px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-primary:hover{background:var(--c-accent-h)}
+.btn-ghost{background:transparent;color:var(--c-text-2);border:1.5px solid var(--c-border-2);padding:7px 16px;border-radius:7px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-ghost:hover{border-color:var(--c-text-3);color:var(--c-text)}
+.empty-state{text-align:center;padding:60px 20px;color:var(--c-text-4);font-size:13px;line-height:2}
+.empty-state .big{font-size:36px;margin-bottom:8px}
+
+/* Toast */
+#toast-stack{position:fixed;bottom:20px;right:20px;z-index:300;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="brand">
+    <span>AI Camp<span class="brand-dot">·</span>승인 위젯</span>
+    <span class="brand-badge">APPROVAL</span>
+  </div>
+  <div class="hdr-r">
+    <div class="stats-row">
+      <div class="stat"><div class="n pending-n" id="stat-pending">0</div><div class="l">대기중</div></div>
+      <div class="stat"><div class="n ok-n" id="stat-approved">0</div><div class="l">승인</div></div>
+      <div class="stat"><div class="n rej-n" id="stat-rejected">0</div><div class="l">반려</div></div>
+    </div>
+    <a class="btn-icon" href="dashboard.html">← 대시보드</a>
+    <a class="btn-icon" href="kanban.html">📌 칸반</a>
+    <button class="btn-icon" onclick="toggleTheme()">☾</button>
+    <button class="btn-icon" onclick="resetData()">↻ 초기화</button>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <button class="f-pill active" data-f="all" onclick="setFilter('all',this)">전체 <span class="f-cnt" id="cnt-all">0</span></button>
+  <button class="f-pill" data-f="pending" onclick="setFilter('pending',this)">대기중 <span class="f-cnt" id="cnt-pending">0</span></button>
+  <button class="f-pill" data-f="approved" onclick="setFilter('approved',this)">승인완료 <span class="f-cnt" id="cnt-approved">0</span></button>
+  <button class="f-pill" data-f="rejected" onclick="setFilter('rejected',this)">반려 <span class="f-cnt" id="cnt-rejected">0</span></button>
+  <input class="f-search" type="text" placeholder="고객 ID · 카테고리 검색..." id="search-input" oninput="renderList()">
+</div>
+
+<div class="main" id="main-list"></div>
+
+<!-- Edit overlay -->
+<div class="edit-overlay" id="edit-overlay">
+  <div class="edit-modal">
+    <h3>AI 답변 초안 수정 <button class="btn-ghost" style="font-size:11px;padding:4px 10px" onclick="closeEdit()">닫기</button></h3>
+    <textarea id="edit-textarea" rows="6"></textarea>
+    <div class="edit-modal-foot">
+      <button class="btn-ghost" onclick="closeEdit()">취소</button>
+      <button class="btn-primary" onclick="saveEdit()">저장 후 승인</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-stack"></div>
+
+<script>
+const LS = 'approval-widget-v1';
+let currentFilter = 'all';
+let editId = null;
+
+const SAMPLE = [
+  {id:'INQ-001',status:'pending', category:'배송문의',risk:'low',  customer:'김민준',orderId:'ORD-23847',
+   inquiry:'주문한 지 5일이 지났는데 아직 배송이 시작도 안 됐어요. 어떻게 된 건지 확인해주세요.',
+   draft:'안녕하세요, 고객님! 주문 번호 ORD-23847 배송 현황을 확인해 드리겠습니다.\n\n현재 물류센터 출고 처리 중으로, 오늘 오후 중 배송 시작 예정입니다. 불편을 드려 죄송합니다.\n\n추가 문의는 언제든지 연락 주세요. 감사합니다.',
+   ts: Date.now()-3600000*2},
+  {id:'INQ-002',status:'pending', category:'교환/반품',risk:'high', customer:'이서연',orderId:'ORD-23901',
+   inquiry:'받은 상품 색상이 주문한 것과 완전히 달라요. 빨간색 주문했는데 파란색이 왔어요. 교환해주세요.',
+   draft:'고객님, 불편을 드려 진심으로 사과드립니다.\n\n주문하신 색상과 다른 상품이 배송된 점 확인되었습니다. 즉시 올바른 상품으로 교환 처리해 드리겠습니다.\n\n회수 기사가 내일 오전 중 방문 예정이오니 상품 준비 부탁드립니다.',
+   ts: Date.now()-3600000*1},
+  {id:'INQ-003',status:'approved', category:'환불요청',risk:'mid',  customer:'박지호',orderId:'ORD-23756',
+   inquiry:'구매한 제품이 광고와 기능이 너무 달라서 환불하고 싶습니다. 기능이 절반도 안 됩니다.',
+   draft:'고객님, 불편을 드려 정말 죄송합니다.\n\n환불 요청 접수되었습니다. 구매일로부터 7일 이내 환불 가능하며, 반품 택배비는 저희가 부담합니다.\n\n3~5 영업일 내 결제 취소 완료 예정입니다.',
+   ts: Date.now()-3600000*5},
+  {id:'INQ-004',status:'rejected', category:'불만접수',risk:'high', customer:'최유나',orderId:'ORD-23612',
+   inquiry:'CS 직원이 너무 불친절하게 응대했어요. 앞으로 절대 이 쇼핑몰 안 씁니다.',
+   draft:'고객님, 불쾌한 경험을 하셨다니 정말 죄송합니다...',
+   ts: Date.now()-3600000*8},
+  {id:'INQ-005',status:'pending', category:'상품문의',risk:'low',  customer:'정우성',orderId:'ORD-24001',
+   inquiry:'이 제품 A사이즈가 실측 기준으로 어느 정도인지 알 수 있을까요? 키 175cm 몸무게 70kg입니다.',
+   draft:'안녕하세요, 고객님!\n\n문의하신 상품 A사이즈 실측은 어깨 45cm, 가슴 100cm, 총장 68cm입니다.\n\n175cm/70kg 체형이시면 A사이즈가 적합할 것 같습니다. 추가 문의 편하게 주세요!',
+   ts: Date.now()-1800000},
+];
+
+function loadData(){
+  const saved = localStorage.getItem(LS);
+  return saved ? JSON.parse(saved) : SAMPLE.map(d=>({...d}));
+}
+function saveData(d){ localStorage.setItem(LS, JSON.stringify(d)); }
+
+function getCatClass(cat){
+  const m={'배송문의':'cat-delivery','교환/반품':'cat-exchange','환불요청':'cat-refund','상품문의':'cat-inquiry','불만접수':'cat-complaint'};
+  return m[cat]||'cat-inquiry';
+}
+function getRiskClass(r){ return r==='high'?'risk-high':r==='mid'?'risk-mid':'risk-low'; }
+function getRiskLbl(r){ return r==='high'?'고위험':r==='mid'?'중위험':'저위험'; }
+function getStatusClass(s){ return s==='approved'?'s-approved':s==='rejected'?'s-rejected':'s-pending'; }
+function getStatusLbl(s){ return s==='approved'?'승인완료':s==='rejected'?'반려':'대기중'; }
+function timeDiff(ts){
+  const m=Math.floor((Date.now()-ts)/60000);
+  if(m<60) return m+'분 전';
+  const h=Math.floor(m/60); if(h<24) return h+'시간 전';
+  return Math.floor(h/24)+'일 전';
+}
+function esc(t){ const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
+
+function setFilter(f, el){
+  currentFilter=f;
+  document.querySelectorAll('.f-pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  renderList();
+}
+
+function renderList(){
+  const data = loadData();
+  const q = (document.getElementById('search-input').value||'').toLowerCase();
+  const filtered = data.filter(d=>{
+    if(currentFilter!=='all'&&d.status!==currentFilter) return false;
+    if(q&&!d.customer.includes(q)&&!d.category.toLowerCase().includes(q)&&!d.id.toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  const counts = {all:data.length, pending:0, approved:0, rejected:0};
+  data.forEach(d=>{ counts[d.status]=(counts[d.status]||0)+1; });
+  document.getElementById('stat-pending').textContent=counts.pending||0;
+  document.getElementById('stat-approved').textContent=counts.approved||0;
+  document.getElementById('stat-rejected').textContent=counts.rejected||0;
+  document.getElementById('cnt-all').textContent=data.length;
+  document.getElementById('cnt-pending').textContent=counts.pending||0;
+  document.getElementById('cnt-approved').textContent=counts.approved||0;
+  document.getElementById('cnt-rejected').textContent=counts.rejected||0;
+
+  const el = document.getElementById('main-list');
+  if(!filtered.length){
+    el.innerHTML=`<div class="empty-state"><div class="big">✓</div>조건에 맞는 항목이 없습니다.</div>`;
+    return;
+  }
+  el.innerHTML = filtered.map(d=>`
+    <div class="acard status-${d.status}" id="card-${d.id}">
+      <div class="acard-head">
+        <span class="acard-id">${esc(d.id)}</span>
+        <span class="acard-cat ${getCatClass(d.category)}">${esc(d.category)}</span>
+        <span class="risk-badge ${getRiskClass(d.risk)}">${getRiskLbl(d.risk)}</span>
+        <span style="font-size:10px;color:var(--c-text-4);font-family:'JetBrains Mono',monospace;margin-left:4px">${timeDiff(d.ts)}</span>
+        <span class="acard-status ${getStatusClass(d.status)}">${getStatusLbl(d.status)}</span>
+      </div>
+      <div class="acard-body">
+        <div class="msg-block">
+          <div class="msg-label">고객 문의</div>
+          <div class="msg-box">${esc(d.inquiry)}</div>
+        </div>
+        <div class="msg-block">
+          <div class="msg-label">AI 답변 초안</div>
+          <div class="msg-box draft">${esc(d.draft)}</div>
+        </div>
+      </div>
+      <div class="acard-foot">
+        <div class="customer-info">
+          주문번호 <span>${esc(d.orderId)}</span> · 고객 <span>${esc(d.customer)}</span>
+        </div>
+        <div class="action-btns">
+          ${d.status==='pending'
+            ? `<button class="btn-edit" onclick="openEdit('${d.id}')">수정</button>
+               <button class="btn-reject" onclick="doReject('${d.id}')">반려</button>
+               <button class="btn-approve" onclick="doApprove('${d.id}')">승인 →</button>`
+            : `<span class="btn-done-lbl">${d.status==='approved'?'✓ 승인됨':'✗ 반려됨'}</span>`
+          }
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function doApprove(id){
+  const data=loadData(); const d=data.find(x=>x.id===id); if(!d) return;
+  d.status='approved'; saveData(data); renderList(); showToast(`${id} 승인 완료`,'ok');
+}
+function doReject(id){
+  const data=loadData(); const d=data.find(x=>x.id===id); if(!d) return;
+  d.status='rejected'; saveData(data); renderList(); showToast(`${id} 반려 처리`,'err');
+}
+function openEdit(id){
+  const data=loadData(); const d=data.find(x=>x.id===id); if(!d) return;
+  editId=id;
+  document.getElementById('edit-textarea').value=d.draft;
+  document.getElementById('edit-overlay').classList.add('open');
+}
+function closeEdit(){ document.getElementById('edit-overlay').classList.remove('open'); editId=null; }
+function saveEdit(){
+  if(!editId) return;
+  const data=loadData(); const d=data.find(x=>x.id===editId); if(!d) return;
+  d.draft=document.getElementById('edit-textarea').value;
+  d.status='approved';
+  saveData(data); closeEdit(); renderList(); showToast(`${editId} 수정 후 승인`,'ok');
+}
+function resetData(){ localStorage.removeItem(LS); renderList(); showToast('초기화 완료','ok'); }
+function toggleTheme(){
+  const r=document.documentElement;
+  r.dataset.theme=r.dataset.theme==='dark'?'':'dark';
+}
+function showToast(msg,type){
+  let c=document.getElementById('toast-stack');
+  const t=document.createElement('div'); t.textContent=msg;
+  t.style.cssText=`padding:9px 14px;border-radius:8px;font-size:12px;font-weight:600;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.2);max-width:280px;pointer-events:auto;background:${type==='ok'?'#059669':'#dc2626'}`;
+  c.appendChild(t); setTimeout(()=>{ t.style.transition='opacity .3s'; t.style.opacity='0'; setTimeout(()=>t.remove(),300); },2500);
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeEdit(); });
+renderList();
+</script>
+</body>
+</html>

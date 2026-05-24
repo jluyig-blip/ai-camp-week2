@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>문의 목록</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --c-bg:#fafafa;--c-surface:#fff;--c-surface-2:#f4f4f5;--c-surface-3:#e4e4e7;
+  --c-border:#e4e4e7;--c-border-2:#d4d4d8;
+  --c-text:#18181b;--c-text-2:#52525b;--c-text-3:#71717a;--c-text-4:#a1a1aa;
+  --c-accent:#059669;--c-accent-h:#047857;--c-accent-bg:#d1fae5;
+  --c-danger:#dc2626;--c-danger-bg:#fee2e2;
+  --c-warn:#f59e0b;--c-warn-bg:#fef3c7;
+  --c-blue:#1d4ed8;--c-blue-bg:#dbeafe;
+  --c-purple:#7c3aed;--c-purple-bg:#ede9fe;
+  --sh-sm:0 1px 2px rgba(0,0,0,.04);--sh-md:0 2px 8px rgba(0,0,0,.08);
+  --hdr-h:52px;
+}
+[data-theme="dark"]{
+  --c-bg:#0a0a0b;--c-surface:#18181b;--c-surface-2:#27272a;--c-surface-3:#3f3f46;
+  --c-border:#27272a;--c-border-2:#3f3f46;
+  --c-text:#fafafa;--c-text-2:#d4d4d8;--c-text-3:#a1a1aa;--c-text-4:#71717a;
+  --c-accent:#10b981;--c-accent-h:#34d399;--c-accent-bg:rgba(16,185,129,.15);
+  --c-danger:#ef4444;--c-danger-bg:rgba(239,68,68,.12);
+  --c-warn:#f59e0b;--c-warn-bg:rgba(245,158,11,.12);
+  --c-blue:#60a5fa;--c-blue-bg:rgba(59,130,246,.12);
+  --c-purple:#a78bfa;--c-purple-bg:rgba(124,58,237,.15);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:var(--c-bg);color:var(--c-text);font-family:'Pretendard Variable',Pretendard,-apple-system,sans-serif;font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{display:flex;flex-direction:column;overflow:hidden}
+
+.hdr{height:var(--hdr-h);padding:0 20px;border-bottom:1px solid var(--c-border);background:var(--c-surface);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.brand{font-size:14px;font-weight:700;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+.brand-dot{color:var(--c-purple)}
+.brand-badge{font-size:10px;font-family:'JetBrains Mono',monospace;font-weight:700;padding:2px 8px;border-radius:5px;background:var(--c-purple-bg);color:var(--c-purple)}
+.hdr-r{display:flex;align-items:center;gap:8px}
+.result-lbl{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-text-3);font-weight:600}
+.btn-icon{background:var(--c-surface);border:1px solid var(--c-border-2);color:var(--c-text-2);padding:6px 11px;border-radius:7px;font-size:11.5px;cursor:pointer;font-family:inherit;font-weight:600}
+.btn-icon:hover{border-color:var(--c-text-3);color:var(--c-text)}
+
+/* Search bar */
+.search-bar{padding:10px 20px;background:var(--c-surface);border-bottom:1px solid var(--c-border);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.field-select{background:var(--c-surface-2);border:1.5px solid var(--c-border-2);color:var(--c-text);padding:7px 10px;border-radius:7px 0 0 7px;font-size:12px;font-family:inherit;font-weight:600;cursor:pointer;min-width:140px;border-right:0}
+.field-select:focus{outline:none}
+.search-input{flex:1;background:var(--c-bg);border:1.5px solid var(--c-border-2);border-radius:0 7px 7px 0;padding:7px 12px;font-size:12.5px;color:var(--c-text);font-family:inherit;border-left:1px solid var(--c-border)}
+.search-input:focus{outline:none;border-color:var(--c-purple)}
+.search-input::placeholder{color:var(--c-text-4)}
+.btn-search{background:var(--c-purple);color:#fff;border:none;padding:7px 18px;border-radius:7px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+.btn-search:hover{background:#6d28d9}
+.btn-clear{background:transparent;color:var(--c-text-3);border:1.5px solid var(--c-border-2);padding:7px 12px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap}
+.btn-clear:hover{border-color:var(--c-text-4);color:var(--c-text)}
+
+/* Quick field buttons */
+.field-pills{padding:6px 20px;background:var(--c-bg);border-bottom:1px solid var(--c-border);display:flex;align-items:center;gap:5px;flex-shrink:0;overflow-x:auto}
+.field-lbl{font-size:10px;font-weight:800;color:var(--c-text-3);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;margin-right:4px}
+.fp{font-size:11px;font-weight:700;padding:3px 10px;border-radius:9999px;border:1.5px solid var(--c-border);background:var(--c-surface);color:var(--c-text-2);cursor:pointer;white-space:nowrap;font-family:inherit;flex-shrink:0;transition:all .1s}
+.fp:hover{border-color:var(--c-purple);color:var(--c-purple)}
+.fp.active{background:var(--c-purple);color:#fff;border-color:var(--c-purple)}
+
+/* Filter bar */
+.filter-bar{padding:7px 20px;background:var(--c-surface);border-bottom:1px solid var(--c-border);display:flex;align-items:center;gap:6px;flex-shrink:0}
+.f-pill{background:var(--c-surface);border:1.5px solid var(--c-border);color:var(--c-text-2);padding:4px 11px;border-radius:9999px;font-size:11.5px;cursor:pointer;font-family:inherit;font-weight:600;white-space:nowrap}
+.f-pill:hover{border-color:var(--c-text-4)}
+.f-pill.active{background:var(--c-accent);color:#fff;border-color:var(--c-accent)}
+.f-divider{width:1px;height:16px;background:var(--c-border-2);margin:0 2px}
+
+/* Table */
+.table-wrap{flex:1;overflow:auto}
+.table-wrap::-webkit-scrollbar{width:5px;height:5px}
+.table-wrap::-webkit-scrollbar-thumb{background:var(--c-surface-3);border-radius:9999px}
+table{width:100%;border-collapse:collapse;min-width:900px}
+thead tr{position:sticky;top:0;z-index:10}
+thead th{padding:9px 14px;background:var(--c-surface-2);border-bottom:2px solid var(--c-border);font-size:11px;font-weight:800;color:var(--c-text-3);text-align:left;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;cursor:pointer;user-select:none}
+thead th:hover{color:var(--c-text)}
+thead th .sort-icon{margin-left:4px;opacity:.4}
+thead th.sorted .sort-icon{opacity:1;color:var(--c-purple)}
+tbody tr{border-bottom:1px solid var(--c-border);transition:background .08s;cursor:pointer}
+tbody tr:hover{background:var(--c-surface-2)}
+tbody tr.selected{background:var(--c-purple-bg)}
+tbody td{padding:9px 14px;font-size:12.5px;vertical-align:middle;white-space:nowrap}
+.td-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-text-4);font-weight:700}
+.td-highlight{background:rgba(253,224,71,.4);border-radius:2px;font-weight:700}
+[data-theme="dark"] .td-highlight{background:rgba(253,224,71,.2)}
+.status-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:9999px;white-space:nowrap}
+.s-received{background:var(--c-blue-bg);color:var(--c-blue)}
+.s-processing{background:var(--c-warn-bg);color:var(--c-warn)}
+.s-completed{background:var(--c-accent-bg);color:var(--c-accent)}
+.s-pending{background:var(--c-surface-2);color:var(--c-text-3)}
+[data-theme="dark"] .s-received{background:rgba(59,130,246,.15);color:#93c5fd}
+.cat-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px}
+.cat-delivery{background:#dbeafe;color:#1d4ed8}
+.cat-exchange{background:#fef3c7;color:#92400e}
+.cat-refund{background:#fee2e2;color:#dc2626}
+.cat-inquiry{background:#f0fdf4;color:#15803d}
+.cat-complaint{background:#fdf4ff;color:#7e22ce}
+[data-theme="dark"] .cat-delivery{background:rgba(59,130,246,.15);color:#93c5fd}
+[data-theme="dark"] .cat-exchange{background:rgba(245,158,11,.15);color:#fbbf24}
+[data-theme="dark"] .cat-refund{background:rgba(239,68,68,.15);color:#fca5a5}
+[data-theme="dark"] .cat-inquiry{background:rgba(16,185,129,.15);color:#6ee7b7}
+[data-theme="dark"] .cat-complaint{background:rgba(168,85,247,.15);color:#d8b4fe}
+.empty-row td{text-align:center;padding:60px;color:var(--c-text-4);font-size:12px}
+
+/* Detail drawer */
+.drawer{position:fixed;right:0;top:0;bottom:0;width:420px;background:var(--c-surface);border-left:1px solid var(--c-border);box-shadow:-4px 0 24px rgba(0,0,0,.1);z-index:100;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .2s ease}
+.drawer.open{transform:translateX(0)}
+.drawer-head{padding:14px 16px;border-bottom:1px solid var(--c-border);display:flex;align-items:center;justify-content:space-between;background:var(--c-surface-2);flex-shrink:0}
+.drawer-head .ttl{font-size:13px;font-weight:700}
+.drawer-close{background:transparent;border:1px solid var(--c-border-2);color:var(--c-text-2);padding:4px 10px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit}
+.drawer-body{flex:1;overflow-y:auto;padding:16px}
+.drawer-body::-webkit-scrollbar{width:4px}
+.drawer-body::-webkit-scrollbar-thumb{background:var(--c-surface-3);border-radius:9999px}
+.drow{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
+.drow .k{font-size:10px;font-weight:800;color:var(--c-text-3);text-transform:uppercase;letter-spacing:.04em;min-width:100px;padding-top:1px;flex-shrink:0}
+.drow .v{font-size:12.5px;color:var(--c-text);font-weight:500;font-family:'JetBrains Mono',monospace;word-break:break-all}
+.drawer-divider{height:1px;background:var(--c-border);margin:12px 0}
+.drawer-inquiry{background:var(--c-bg);border:1px solid var(--c-border);border-radius:8px;padding:11px 13px;font-size:12.5px;line-height:1.7;color:var(--c-text-2);white-space:pre-wrap;word-break:break-word;margin-bottom:10px}
+.drawer-answer{background:var(--c-accent-bg);border:1px solid var(--c-accent);border-radius:8px;padding:11px 13px;font-size:12.5px;line-height:1.7;color:var(--c-text);white-space:pre-wrap;word-break:break-word}
+
+#toast-stack{position:fixed;bottom:20px;right:20px;z-index:300;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="brand">
+    <span>AI Camp<span class="brand-dot">·</span>문의 목록</span>
+    <span class="brand-badge">INQUIRY</span>
+  </div>
+  <div class="hdr-r">
+    <span class="result-lbl" id="result-lbl">— 건</span>
+    <a href="dashboard.html" class="btn-icon">← 대시보드</a>
+    <a href="kanban.html" class="btn-icon">📌 칸반</a>
+    <button class="btn-icon" onclick="toggleTheme()">☾</button>
+  </div>
+</div>
+
+<div class="search-bar">
+  <select class="field-select" id="field-select" onchange="updatePlaceholder()">
+    <option value="orderId">주문번호</option>
+    <option value="externalOrderId">외부몰주문번호</option>
+    <option value="product">상품명</option>
+    <option value="phone">핸드폰번호</option>
+    <option value="orderer">주문자</option>
+    <option value="recipient">수취인</option>
+    <option value="trackingNo">송장번호</option>
+    <option value="email">이메일</option>
+  </select>
+  <input class="search-input" type="text" id="search-input" placeholder="주문번호로 검색..." onkeydown="if(event.key==='Enter')doSearch()">
+  <button class="btn-search" onclick="doSearch()">검색</button>
+  <button class="btn-clear" onclick="clearSearch()">초기화</button>
+</div>
+
+<div class="field-pills">
+  <span class="field-lbl">빠른 선택</span>
+  <button class="fp active" data-field="orderId" onclick="selectField('orderId',this)">주문번호</button>
+  <button class="fp" data-field="externalOrderId" onclick="selectField('externalOrderId',this)">외부몰주문번호</button>
+  <button class="fp" data-field="product" onclick="selectField('product',this)">상품명</button>
+  <button class="fp" data-field="phone" onclick="selectField('phone',this)">핸드폰번호</button>
+  <button class="fp" data-field="orderer" onclick="selectField('orderer',this)">주문자</button>
+  <button class="fp" data-field="recipient" onclick="selectField('recipient',this)">수취인</button>
+  <button class="fp" data-field="trackingNo" onclick="selectField('trackingNo',this)">송장번호</button>
+  <button class="fp" data-field="email" onclick="selectField('email',this)">이메일</button>
+</div>
+
+<div class="filter-bar">
+  <button class="f-pill active" data-f="all" onclick="setStatusFilter('all',this)">전체</button>
+  <button class="f-pill" data-f="received" onclick="setStatusFilter('received',this)">접수</button>
+  <button class="f-pill" data-f="processing" onclick="setStatusFilter('processing',this)">처리중</button>
+  <button class="f-pill" data-f="completed" onclick="setStatusFilter('completed',this)">완료</button>
+  <button class="f-pill" data-f="pending" onclick="setStatusFilter('pending',this)">보류</button>
+  <div class="f-divider"></div>
+  <button class="f-pill" data-cat="all" onclick="setCatFilter('all',this)">전체카테고리</button>
+  <button class="f-pill" data-cat="배송문의" onclick="setCatFilter('배송문의',this)">배송</button>
+  <button class="f-pill" data-cat="교환/반품" onclick="setCatFilter('교환/반품',this)">교환</button>
+  <button class="f-pill" data-cat="환불요청" onclick="setCatFilter('환불요청',this)">환불</button>
+  <button class="f-pill" data-cat="상품문의" onclick="setCatFilter('상품문의',this)">상품</button>
+  <button class="f-pill" data-cat="불만접수" onclick="setCatFilter('불만접수',this)">불만</button>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>번호</th>
+        <th onclick="sortBy('orderId')">주문번호 <span class="sort-icon">↕</span></th>
+        <th onclick="sortBy('externalOrderId')">외부몰주문번호 <span class="sort-icon">↕</span></th>
+        <th onclick="sortBy('product')">상품명 <span class="sort-icon">↕</span></th>
+        <th onclick="sortBy('orderer')">주문자</th>
+        <th>수취인</th>
+        <th>핸드폰</th>
+        <th>카테고리</th>
+        <th>상태</th>
+        <th onclick="sortBy('ts')">접수일 <span class="sort-icon">↕</span></th>
+      </tr>
+    </thead>
+    <tbody id="table-body"></tbody>
+  </table>
+</div>
+
+<!-- Detail drawer -->
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <span class="ttl" id="drawer-title">문의 상세</span>
+    <button class="drawer-close" onclick="closeDrawer()">닫기 ×</button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+</div>
+
+<div id="toast-stack"></div>
+
+<script>
+const FIELDS = {orderId:'주문번호',externalOrderId:'외부몰주문번호',product:'상품명',phone:'핸드폰번호',orderer:'주문자',recipient:'수취인',trackingNo:'송장번호',email:'이메일'};
+const PH = {orderId:'예: ORD-23847',externalOrderId:'예: NAVER-98712',product:'예: 기모 후드티',phone:'예: 010-1234-5678',orderer:'예: 홍길동',recipient:'예: 김철수',trackingNo:'예: 564821039847',email:'예: hong@email.com'};
+const CAT_CLS = {'배송문의':'cat-delivery','교환/반품':'cat-exchange','환불요청':'cat-refund','상품문의':'cat-inquiry','불만접수':'cat-complaint'};
+const ST_CLS = {received:'s-received',processing:'s-processing',completed:'s-completed',pending:'s-pending'};
+const ST_LBL = {received:'접수',processing:'처리중',completed:'완료',pending:'보류'};
+
+let searchField = 'orderId', searchQuery = '', statusFilter = 'all', catFilter = 'all';
+let sortField = 'ts', sortAsc = false;
+
+const DATA = [
+  {id:'INQ-001',orderId:'ORD-23847',externalOrderId:'NAVER-98712',product:'기모 후드 집업 네이비 L',orderer:'김민준',recipient:'김민준',phone:'010-3812-9473',email:'minjun.kim@gmail.com',trackingNo:'564821039847',category:'배송문의',status:'completed',inquiry:'주문한 지 5일이 지났는데 배송이 시작 안 됐어요.',answer:'물류센터 출고 처리 중입니다. 오늘 오후 배송 시작 예정입니다.',ts:Date.now()-86400000*3},
+  {id:'INQ-002',orderId:'ORD-23901',externalOrderId:'KAKAO-11293',product:'캐시미어 터틀넥 빨간색 M',orderer:'이서연',recipient:'이서연',phone:'010-5521-8834',email:'seoyeon@naver.com',trackingNo:'',category:'교환/반품',status:'processing',inquiry:'빨간색 주문했는데 파란색이 왔어요.',answer:'교환 처리 중입니다. 회수 기사 방문 예정입니다.',ts:Date.now()-86400000*2},
+  {id:'INQ-003',orderId:'ORD-23756',externalOrderId:'',product:'무선 청소기 V12',orderer:'박지호',recipient:'박지호',phone:'010-7743-2291',email:'jiho.park@kakao.com',trackingNo:'338291047820',category:'환불요청',status:'completed',inquiry:'광고와 기능이 너무 달라서 환불하고 싶습니다.',answer:'환불 처리 완료. 3~5 영업일 내 입금 예정입니다.',ts:Date.now()-86400000*5},
+  {id:'INQ-004',orderId:'ORD-23612',externalOrderId:'COUPANG-55019',product:'',orderer:'최유나',recipient:'최유나',phone:'010-9901-4412',email:'yunachoi@daum.net',trackingNo:'',category:'불만접수',status:'pending',inquiry:'CS 직원이 너무 불친절하게 응대했어요.',answer:'',ts:Date.now()-86400000*7},
+  {id:'INQ-005',orderId:'ORD-24001',externalOrderId:'NAVER-99234',product:'린넨 셔츠 화이트 A',orderer:'정우성',recipient:'정우성',phone:'010-2233-8871',email:'woosung@gmail.com',trackingNo:'774921038471',category:'상품문의',status:'completed',inquiry:'A사이즈 실측 기준이 어떻게 되나요?',answer:'어깨 45cm, 가슴 100cm, 총장 68cm입니다.',ts:Date.now()-3600000*5},
+  {id:'INQ-006',orderId:'ORD-24020',externalOrderId:'',product:'스트레치 슬랙스 M',orderer:'한소희',recipient:'한소희',phone:'010-6612-3348',email:'sohee.han@naver.com',trackingNo:'889201734862',category:'배송문의',status:'received',inquiry:'배송 현황을 알 수 없어요. 확인 부탁드립니다.',answer:'',ts:Date.now()-3600000*2},
+  {id:'INQ-007',orderId:'ORD-23500',externalOrderId:'KAKAO-10291',product:'에어팟 케이스 블랙',orderer:'김대호',recipient:'김대호',phone:'010-4481-7723',email:'daeho.kim@gmail.com',trackingNo:'',category:'환불요청',status:'pending',inquiry:'결제가 두 번 됐어요. 환불 요청합니다.',answer:'결제팀 확인 중입니다.',ts:Date.now()-86400000*14},
+  {id:'INQ-008',orderId:'ORD-24035',externalOrderId:'NAVER-99999',product:'울 코트 카멜 S',orderer:'이도현',recipient:'박수진',phone:'010-8812-5521',email:'dohyun@kakao.com',trackingNo:'223019478201',category:'배송문의',status:'processing',inquiry:'선물 배송인데 수취인 주소 변경이 가능한가요?',answer:'배송 전이므로 주소 변경 가능합니다.',ts:Date.now()-3600000*8},
+  {id:'INQ-009',orderId:'ORD-23991',externalOrderId:'COUPANG-55812',product:'실크 블라우스 핑크 M',orderer:'오정세',recipient:'오정세',phone:'010-3391-6612',email:'jungse.oh@naver.com',trackingNo:'991234870123',category:'교환/반품',status:'completed',inquiry:'세탁 후 색이 빠졌어요. 불량품 같아요.',answer:'세탁 불량 확인 후 교환 처리 완료.',ts:Date.now()-86400000*4},
+  {id:'INQ-010',orderId:'ORD-24050',externalOrderId:'',product:'레더 미니백 브라운',orderer:'정민지',recipient:'정민지',phone:'010-7812-4490',email:'minji.chung@gmail.com',trackingNo:'',category:'상품문의',status:'received',inquiry:'가죽 소재가 진짜인지 인조인지 알 수 있을까요?',answer:'',ts:Date.now()-1800000},
+];
+
+function esc(t){if(!t)return'';const d=document.createElement('div');d.textContent=t;return d.innerHTML;}
+function highlight(text, query) {
+  if(!query||!text) return esc(text||'');
+  const re = new RegExp('('+query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');
+  return esc(text).replace(re,'<span class="td-highlight">$1</span>');
+}
+function fmtDate(ts){return new Date(ts).toLocaleDateString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});}
+
+function updatePlaceholder(){
+  const f=document.getElementById('field-select').value;
+  searchField=f;
+  document.getElementById('search-input').placeholder=PH[f]||'검색어 입력...';
+  document.querySelectorAll('.fp').forEach(b=>{b.classList.toggle('active',b.dataset.field===f);});
+}
+function selectField(f,el){
+  document.getElementById('field-select').value=f;
+  updatePlaceholder();
+  document.getElementById('search-input').focus();
+}
+function doSearch(){
+  searchQuery=(document.getElementById('search-input').value||'').trim();
+  renderTable();
+}
+function clearSearch(){
+  searchQuery=''; document.getElementById('search-input').value='';
+  renderTable();
+}
+function setStatusFilter(f,el){
+  statusFilter=f;
+  document.querySelectorAll('[data-f]').forEach(b=>b.classList.toggle('active',b.dataset.f===f));
+  renderTable();
+}
+function setCatFilter(f,el){
+  catFilter=f;
+  document.querySelectorAll('[data-cat]').forEach(b=>b.classList.toggle('active',b.dataset.cat===f));
+  renderTable();
+}
+function sortBy(field){
+  if(sortField===field) sortAsc=!sortAsc; else{sortField=field;sortAsc=true;}
+  renderTable();
+}
+
+function getFiltered(){
+  let d=[...DATA];
+  if(searchQuery){
+    d=d.filter(r=>{const v=(r[searchField]||'').toLowerCase();return v.includes(searchQuery.toLowerCase());});
+  }
+  if(statusFilter!=='all') d=d.filter(r=>r.status===statusFilter);
+  if(catFilter!=='all') d=d.filter(r=>r.category===catFilter);
+  d.sort((a,b)=>{
+    const av=a[sortField]||'',bv=b[sortField]||'';
+    const cmp=typeof av==='number'?av-bv:av.localeCompare(bv,'ko');
+    return sortAsc?cmp:-cmp;
+  });
+  return d;
+}
+
+function renderTable(){
+  const d=getFiltered();
+  document.getElementById('result-lbl').textContent=d.length+'건';
+  const q=searchQuery;
+  const body=document.getElementById('table-body');
+  if(!d.length){body.innerHTML=`<tr class="empty-row"><td colspan="10">검색 결과가 없습니다.</td></tr>`;return;}
+  body.innerHTML=d.map(r=>`
+    <tr onclick="openDrawer('${r.id}')">
+      <td class="td-id">${esc(r.id)}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11.5px">${searchField==='orderId'&&q?highlight(r.orderId,q):esc(r.orderId)}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-text-3)">${searchField==='externalOrderId'&&q?highlight(r.externalOrderId,q):esc(r.externalOrderId)||'—'}</td>
+      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">${searchField==='product'&&q?highlight(r.product,q):esc(r.product)||'—'}</td>
+      <td>${searchField==='orderer'&&q?highlight(r.orderer,q):esc(r.orderer)}</td>
+      <td>${searchField==='recipient'&&q?highlight(r.recipient,q):esc(r.recipient)}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px">${searchField==='phone'&&q?highlight(r.phone,q):esc(r.phone)}</td>
+      <td><span class="cat-badge ${CAT_CLS[r.category]||'cat-inquiry'}">${esc(r.category)}</span></td>
+      <td><span class="status-badge ${ST_CLS[r.status]||'s-received'}">${ST_LBL[r.status]||r.status}</span></td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-text-3)">${fmtDate(r.ts)}</td>
+    </tr>
+  `).join('');
+}
+
+function openDrawer(id){
+  const r=DATA.find(x=>x.id===id); if(!r) return;
+  document.getElementById('drawer-title').textContent=r.id+' — '+r.category;
+  document.getElementById('drawer-body').innerHTML=`
+    ${Object.entries({주문번호:r.orderId,외부몰주문번호:r.externalOrderId||'—',상품명:r.product||'—',주문자:r.orderer,수취인:r.recipient,핸드폰:r.phone,이메일:r.email,송장번호:r.trackingNo||'—',접수일:fmtDate(r.ts)}).map(([k,v])=>`<div class="drow"><span class="k">${k}</span><span class="v">${esc(v)}</span></div>`).join('')}
+    <div class="drawer-divider"></div>
+    <div style="font-size:10px;font-weight:800;color:var(--c-text-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">고객 문의</div>
+    <div class="drawer-inquiry">${esc(r.inquiry)}</div>
+    ${r.answer?`<div style="font-size:10px;font-weight:800;color:var(--c-text-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;margin-top:10px">AI 답변</div><div class="drawer-answer">${esc(r.answer)}</div>`:''}
+  `;
+  document.getElementById('drawer').classList.add('open');
+}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
+function toggleTheme(){const r=document.documentElement;r.dataset.theme=r.dataset.theme==='dark'?'':'dark';}
+renderTable();
+</script>
+</body>
+</html>
