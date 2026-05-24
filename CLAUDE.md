@@ -247,6 +247,52 @@ market_idx=71980120&reason=단순변심
 
 ---
 
+### 5. 주소 변경 — `change_address.php`
+
+**조건**: `status_text`가 `결제완료` 또는 `부분출고`일 때만 호출
+
+```
+POST /api/cs/change_address.php
+market_idx=71980120&new_address=서울시 강남구 테헤란로 123
+```
+
+| 파라미터 | 필수 | 설명 |
+|---|---|---|
+| `market_idx` | O | 주문번호 |
+| `new_address` | O | 변경할 새 주소 (전체 주소) |
+
+**핵심 응답 필드**: `ok`, `msg`
+
+**판단 룰**
+- `ok=true` → "주소 변경이 완료되었습니다" 안내
+- `ok=false` → `msg` 그대로 안내 후 CS 인계
+
+---
+
+### 6. 옵션 변경 — `change_option.php`
+
+**조건**: `status_text`가 `결제완료` 또는 `부분출고`일 때만 호출
+
+```
+POST /api/cs/change_option.php
+market_idx=71980120&goods_idx=170053&op1=Black&op2=Free
+```
+
+| 파라미터 | 필수 | 설명 |
+|---|---|---|
+| `market_idx` | O | 주문번호 |
+| `goods_idx` | O | 변경 대상 상품 PK |
+| `op1` | △ | 변경할 옵션1 (사이즈 등) |
+| `op2` | △ | 변경할 옵션2 (색상 등) |
+
+**핵심 응답 필드**: `ok`, `msg`
+
+**판단 룰**
+- `ok=true` → "옵션 변경이 완료되었습니다" 안내
+- `ok=false` → `msg` 그대로 안내 후 CS 인계 (재고 없음 등)
+
+---
+
 ### LLM Tool 정의 (Claude / OpenAI 형식)
 
 ```json
@@ -299,6 +345,32 @@ market_idx=71980120&reason=단순변심
         "basket_idx_list": {"type": "array", "items": {"type": "integer"}}
       },
       "required": ["market_idx", "reason"]
+    }
+  },
+  {
+    "name": "change_address",
+    "description": "주문 배송지를 변경합니다. 결제완료/부분출고 상태일 때만 호출 가능합니다.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "market_idx": {"type": "string", "description": "주문번호"},
+        "new_address": {"type": "string", "description": "변경할 새 주소 (전체 주소)"}
+      },
+      "required": ["market_idx", "new_address"]
+    }
+  },
+  {
+    "name": "change_option",
+    "description": "주문 상품의 옵션을 변경합니다. 결제완료/부분출고 상태일 때만 호출 가능합니다.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "market_idx": {"type": "string", "description": "주문번호"},
+        "goods_idx": {"type": "integer", "description": "변경 대상 상품 PK"},
+        "op1": {"type": "string", "description": "변경할 옵션1 (사이즈 등)"},
+        "op2": {"type": "string", "description": "변경할 옵션2 (색상 등)"}
+      },
+      "required": ["market_idx", "goods_idx"]
     }
   }
 ]
