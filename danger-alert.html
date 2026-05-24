@@ -126,6 +126,30 @@ body{display:flex;flex-direction:column;overflow:hidden}
 .tl-body .m{font-size:10px;color:var(--c-text-4);font-family:'JetBrains Mono',monospace;margin-top:2px}
 
 #toast-stack{position:fixed;bottom:20px;right:20px;z-index:300;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+
+/* Detail modal */
+.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.45);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.hidden{display:none}
+.modal-box{background:var(--c-surface);border:1px solid var(--c-border);border-radius:14px;width:100%;max-width:620px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,.2);overflow:hidden}
+.modal-head{padding:14px 18px;border-bottom:1px solid var(--c-border);background:var(--c-surface-2);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.modal-title{font-size:13px;font-weight:700;flex:1}
+.modal-close{background:var(--c-surface-3);border:none;width:28px;height:28px;border-radius:7px;font-size:14px;cursor:pointer;color:var(--c-text-2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit}
+.modal-close:hover{background:var(--c-danger-bg);color:var(--c-danger)}
+.modal-body{flex:1;overflow-y:auto;padding:18px}
+.modal-body::-webkit-scrollbar{width:5px}
+.modal-body::-webkit-scrollbar-thumb{background:var(--c-surface-3);border-radius:9999px}
+.modal-section{margin-bottom:16px}
+.modal-section:last-child{margin-bottom:0}
+.modal-label{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--c-text-4);margin-bottom:5px}
+.modal-value{font-size:12.5px;color:var(--c-text);line-height:1.6}
+.modal-detail-box{background:var(--c-bg);border:1px solid var(--c-border);border-radius:8px;padding:12px 14px;font-size:12px;color:var(--c-text-2);line-height:1.7;white-space:pre-wrap;word-break:break-word}
+.modal-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.modal-meta-card{background:var(--c-surface-2);border-radius:8px;padding:10px 12px}
+.modal-meta-card .lbl{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--c-text-4);margin-bottom:3px}
+.modal-meta-card .val{font-size:12.5px;font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--c-text)}
+.modal-foot{padding:12px 18px;border-top:1px solid var(--c-border);background:var(--c-surface-2);display:flex;justify-content:flex-end;gap:8px;flex-shrink:0}
+.acard{cursor:pointer}
+.acard .acard-foot{cursor:default}
 </style>
 </head>
 <body>
@@ -165,6 +189,42 @@ body{display:flex;flex-direction:column;overflow:hidden}
 </div>
 
 <div id="toast-stack"></div>
+
+<!-- Detail modal -->
+<div class="modal-overlay hidden" id="detail-modal" onclick="closeDetail(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <span id="modal-sev-badge"></span>
+      <span class="modal-title" id="modal-title"></span>
+      <button class="modal-close" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-label">트리거 조건</div>
+        <div class="modal-value" id="modal-trigger" style="font-weight:700;font-size:13px"></div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-label">상세 내용</div>
+        <div class="modal-detail-box" id="modal-detail"></div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-meta-grid">
+          <div class="modal-meta-card"><div class="lbl">고객명</div><div class="val" id="modal-customer"></div></div>
+          <div class="modal-meta-card"><div class="lbl">주문번호</div><div class="val" id="modal-order"></div></div>
+          <div class="modal-meta-card"><div class="lbl">심각도</div><div class="val" id="modal-severity"></div></div>
+          <div class="modal-meta-card"><div class="lbl">상태</div><div class="val" id="modal-status"></div></div>
+          <div class="modal-meta-card"><div class="lbl">유형</div><div class="val" id="modal-type"></div></div>
+          <div class="modal-meta-card"><div class="lbl">감지 시간</div><div class="val" id="modal-time"></div></div>
+        </div>
+      </div>
+      <div class="modal-section" id="modal-tags-wrap">
+        <div class="modal-label">태그</div>
+        <div class="a-tags" id="modal-tags"></div>
+      </div>
+    </div>
+    <div class="modal-foot" id="modal-foot"></div>
+  </div>
+</div>
 
 <script>
 const LS = 'danger-alert-v1';
@@ -233,7 +293,7 @@ function renderAll(){
   const el=document.getElementById('alert-list');
   if(!filtered.length){ el.innerHTML='<div style="text-align:center;padding:60px;color:var(--c-text-4);font-size:12px">위험 케이스가 없습니다.</div>'; return; }
   el.innerHTML=filtered.map(d=>`
-    <div class="acard sev-${d.severity} ${d.status==='resolved'?'resolved':''}">
+    <div class="acard sev-${d.severity} ${d.status==='resolved'?'resolved':''}" onclick="openDetail('${d.id}')">
       <div class="acard-head">
         <span class="sev-badge sev-${d.severity}">${{critical:'🔴 긴급',high:'🟠 높음',medium:'🟡 중간'}[d.severity]||d.severity}</span>
         <span class="alert-type">${TYPE_ICON[d.type]||''} ${ALERT_TYPES[d.type]||d.type}</span>
@@ -250,8 +310,8 @@ function renderAll(){
         </div>
         ${d.tags.length?`<div class="a-tags">${d.tags.map(t=>`<span class="a-tag ${TAG_CLS[t]||''}">${esc(t)}</span>`).join('')}</div>`:''}
       </div>
-      <div class="acard-foot">
-        <div></div>
+      <div class="acard-foot" onclick="event.stopPropagation()">
+        <div style="font-size:10.5px;color:var(--c-text-4)">클릭하여 상세 보기 →</div>
         <div class="action-btns">
           ${d.status==='resolved'
             ? `<span class="resolved-lbl">✓ 해결 완료</span>`
@@ -301,6 +361,44 @@ function addMockAlert(){
   data.unshift({id:`ALT-${String(mockCount++).padStart(3,'0')}`,severity:sev,type,status:'active',customer:'테스트고객',orderId:`ORD-${Math.floor(Math.random()*99999)}`,trigger:`[테스트] ${ALERT_TYPES[type]} 탐지`,detail:'자동 생성된 테스트 알림입니다.',tags:[type in TAG_CLS?type:''],ts:Date.now()});
   saveData(data); renderAll(); showToast('테스트 알림 추가됨','warn');
 }
+function openDetail(id){
+  const data=loadData(); const d=data.find(x=>x.id===id); if(!d) return;
+  document.getElementById('modal-sev-badge').className='sev-badge sev-'+d.severity;
+  document.getElementById('modal-sev-badge').textContent={{critical:'🔴 긴급',high:'🟠 높음',medium:'🟡 중간'}[d.severity]||d.severity};
+  document.getElementById('modal-title').textContent=ALERT_TYPES[d.type]||d.type;
+  document.getElementById('modal-trigger').textContent=d.trigger;
+  document.getElementById('modal-detail').textContent=d.detail;
+  document.getElementById('modal-customer').textContent=d.customer;
+  document.getElementById('modal-order').textContent=d.orderId;
+  document.getElementById('modal-severity').textContent={critical:'긴급 (Critical)',high:'높음 (High)',medium:'중간 (Medium)'}[d.severity]||d.severity;
+  document.getElementById('modal-status').textContent={active:'🔴 활성',assigned:'🟠 담당배정',resolved:'✅ 해결'}[d.status]||d.status;
+  document.getElementById('modal-type').textContent=(TYPE_ICON[d.type]||'')+' '+(ALERT_TYPES[d.type]||d.type);
+  document.getElementById('modal-time').textContent=timeDiff(d.ts);
+  const tagsEl=document.getElementById('modal-tags');
+  const tagsWrap=document.getElementById('modal-tags-wrap');
+  if(d.tags&&d.tags.filter(Boolean).length){
+    tagsEl.innerHTML=d.tags.filter(Boolean).map(t=>`<span class="a-tag ${TAG_CLS[t]||''}">${esc(t)}</span>`).join('');
+    tagsWrap.style.display='';
+  } else { tagsWrap.style.display='none'; }
+  const foot=document.getElementById('modal-foot');
+  if(d.status==='resolved'){
+    foot.innerHTML='<span class="resolved-lbl" style="font-size:13px">✓ 해결 완료</span>';
+  } else {
+    foot.innerHTML=`
+      ${d.status==='active'?`<button class="btn-assign" onclick="assignAlert('${d.id}');closeDetail()">담당 배정</button>`:''}
+      <button class="btn-escalate" onclick="escalateAlert('${d.id}')">에스컬레이션</button>
+      <button class="btn-resolve" onclick="resolveAlert('${d.id}');closeDetail()">해결 처리</button>`;
+  }
+  document.getElementById('detail-modal').classList.remove('hidden');
+  document.addEventListener('keydown',escClose);
+}
+function closeDetail(e){
+  if(e&&e.target!==document.getElementById('detail-modal')) return;
+  document.getElementById('detail-modal').classList.add('hidden');
+  document.removeEventListener('keydown',escClose);
+}
+function escClose(e){ if(e.key==='Escape'){ document.getElementById('detail-modal').classList.add('hidden'); document.removeEventListener('keydown',escClose); } }
+
 function resetData(){ localStorage.removeItem(LS); renderAll(); showToast('초기화 완료','ok'); }
 function toggleTheme(){ const r=document.documentElement; r.dataset.theme=r.dataset.theme==='dark'?'':'dark'; }
 function showToast(msg,type){
