@@ -185,6 +185,15 @@ body{display:flex;flex-direction:column}
 .tc-rn .arr{color:var(--c-text-4);font-size:9px}
 .tc-link{font-size:10px;font-weight:700;color:var(--c-accent);text-decoration:none;padding:1px 6px;border-radius:4px;border:1px solid var(--c-accent);line-height:1.4;white-space:nowrap;flex-shrink:0}
 .tc-link:hover{background:var(--c-accent);color:#fff}
+.tc-link-gh{color:#8b5cf6;border-color:#8b5cf6}
+.tc-link-gh:hover{background:#8b5cf6;color:#fff}
+/* Git info */
+.git-info{display:flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:4px 10px;background:var(--c-surface-2);border:1px solid var(--c-border);border-radius:7px}
+.git-branch{font-weight:700;color:var(--c-accent)}
+.git-sep{color:var(--c-text-4)}
+.git-time{color:var(--c-text-3);font-weight:600}
+.btn-backup{background:var(--c-surface);border:1px solid var(--c-border-2);color:var(--c-text-2);padding:5px 11px;border-radius:7px;font-size:11.5px;cursor:pointer;font-family:inherit;font-weight:700;transition:all .12s;display:flex;align-items:center;gap:5px}
+.btn-backup:hover{border-color:#8b5cf6;color:#8b5cf6;background:#ede9fe}
 /* Widget bar */
 .widget-bar{padding:7px 20px;background:var(--c-surface);border-bottom:1px solid var(--c-border);display:flex;align-items:center;gap:6px;flex-shrink:0;overflow-x:auto}
 .widget-bar::-webkit-scrollbar{height:0}
@@ -283,6 +292,12 @@ body.ops-collapsed .ops-reopen{display:inline-flex;align-items:center;gap:6px}
       <div class="stat"><div class="n" id="s-done">0</div><div class="l">완료</div></div>
     </div>
     <div class="conn"><span class="cd"></span><span>로컬</span></div>
+    <div class="git-info" id="git-info">
+      <span class="git-branch" id="git-branch">⌥ master</span>
+      <span class="git-sep">·</span>
+      <span class="git-time" id="git-time">커밋 확인 중...</span>
+    </div>
+    <button class="btn-backup" onclick="openBackupModal()">⬆ GitHub 백업</button>
     <button class="theme-tog" onclick="toggleOps()" title="운영 스레드 토글">💬</button>
     <button class="theme-tog" id="theme-tog" onclick="toggleTheme()" title="테마 전환">☾</button>
   </div>
@@ -475,6 +490,40 @@ body.ops-collapsed .ops-reopen{display:inline-flex;align-items:center;gap:6px}
   </div>
 </div>
 
+<!-- GitHub 백업 Modal -->
+<div class="modal-overlay" id="backup-modal" onclick="if(event.target===this)closeBackupModal()">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-head">
+      <div class="m-name"><span class="m-title">GitHub 백업</span><span class="m-group" id="bm-branch">master</span></div>
+      <button class="m-close" onclick="closeBackupModal()">×</button>
+    </div>
+    <div class="modal-body" style="display:flex;flex-direction:column;gap:14px">
+      <div style="background:var(--c-surface-2);border:1px solid var(--c-border);border-radius:8px;padding:10px 14px">
+        <div style="font-size:10px;font-weight:800;color:var(--c-text-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">마지막 커밋</div>
+        <div style="font-size:12.5px;color:var(--c-text);font-family:'JetBrains Mono',monospace" id="bm-commit">확인 중...</div>
+        <div style="font-size:11px;color:var(--c-text-3);margin-top:4px" id="bm-time">—</div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--c-text-2);margin-bottom:6px">터미널에서 실행</div>
+        <div style="position:relative">
+          <pre id="backup-cmd" style="background:var(--c-bg);border:1px solid var(--c-border);border-radius:8px;padding:10px 12px;font-size:11.5px;font-family:'JetBrains Mono',monospace;color:var(--c-text);white-space:pre-wrap;word-break:break-all;line-height:1.7;margin:0">cd "C:\Users\정기열\고객문의-자동응답"
+git add -A
+git commit -m "칸반 업데이트"
+git push origin master</pre>
+          <button onclick="copyBackupCmd()" style="position:absolute;top:8px;right:8px;background:var(--c-surface);border:1px solid var(--c-border-2);color:var(--c-text-2);padding:4px 10px;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit" id="copy-btn">복사</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <a href="https://github.com/jluyig-blip/ai-camp-week2" target="_blank" class="btn-ghost" style="text-decoration:none">GitHub에서 보기 ↗</a>
+      <div class="right">
+        <button class="btn-ghost" onclick="closeBackupModal()">닫기</button>
+        <button class="btn-primary" onclick="openGitHub()">저장소 열기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Reset Modal -->
 <div class="modal-overlay" id="reset-modal" onclick="if(event.target===this)closeResetModal()">
   <div class="modal" style="max-width:480px">
@@ -613,7 +662,7 @@ function taskCardHTML(t){
     <div class="tc-title">${esc(t.subject)}</div>
     <div class="tc-meta">
       ${ag?`<span class="tc-ag"><span class="agd" style="background:${color}"></span>${esc(ag.name)}</span>`:''}
-      ${t.description&&t.description.endsWith('.html')?`<a class="tc-link" href="${esc(t.description)}" target="_blank" onclick="event.stopPropagation()">↗ 열기</a>`:''}
+      ${t.description&&t.description.endsWith('.html')?`<a class="tc-link" href="${esc(t.description)}" target="_blank" onclick="event.stopPropagation()" title="로컬에서 열기">↗ 로컬</a><a class="tc-link tc-link-gh" href="https://jluyig-blip.github.io/ai-camp-week2/${esc(t.description)}" target="_blank" onclick="event.stopPropagation()" title="배포 버전 열기">🌐 배포</a>`:''}
       <span class="tc-st" data-s="${t.status}" style="margin-left:auto"><span class="sd"></span>${COL_LBL[t.status]||t.status}</span>
     </div>
   </div>`;
@@ -816,12 +865,65 @@ document.addEventListener('keydown',e=>{
     else if(document.getElementById('task-modal').classList.contains('open')) closeTaskModal();
     else if(document.getElementById('resource-modal').classList.contains('open')) closeResourceModal();
     else if(document.getElementById('reset-modal').classList.contains('open')) closeResetModal();
+    else if(document.getElementById('backup-modal').classList.contains('open')) closeBackupModal();
   }
 });
+
+// ── GitHub 연동 ───────────────────────────────────────────────────────────────
+const GH_REPO = 'jluyig-blip/ai-camp-week2';
+const GH_BRANCH = 'master';
+let ghLastCommit = null;
+
+async function fetchGitHubInfo(){
+  try {
+    const res = await fetch(`https://api.github.com/repos/${GH_REPO}/commits/${GH_BRANCH}`, {headers:{Accept:'application/vnd.github.v3+json'}});
+    if(!res.ok) throw new Error('API 오류');
+    const data = await res.json();
+    ghLastCommit = data;
+    const msg = data.commit.message.split('\n')[0];
+    const date = new Date(data.commit.author.date);
+    const ago = timeAgo(date);
+    document.getElementById('git-branch').textContent = '⌥ '+GH_BRANCH;
+    document.getElementById('git-time').textContent = '최근 커밋: '+ago;
+    document.getElementById('bm-commit').textContent = msg;
+    document.getElementById('bm-time').textContent = date.toLocaleString('ko-KR')+' ('+ago+')';
+    document.getElementById('bm-branch').textContent = GH_BRANCH;
+  } catch(e) {
+    document.getElementById('git-time').textContent = '연결 확인 불가';
+  }
+}
+
+function timeAgo(date){
+  const m = Math.floor((Date.now()-date.getTime())/60000);
+  if(m<1) return '방금';
+  if(m<60) return m+'분 전';
+  const h=Math.floor(m/60); if(h<24) return h+'시간 전';
+  return Math.floor(h/24)+'일 전';
+}
+
+function openBackupModal(){
+  if(ghLastCommit){
+    const msg=ghLastCommit.commit.message.split('\n')[0];
+    const date=new Date(ghLastCommit.commit.author.date);
+    document.getElementById('bm-commit').textContent=msg;
+    document.getElementById('bm-time').textContent=date.toLocaleString('ko-KR')+' ('+timeAgo(date)+')';
+  }
+  document.getElementById('backup-modal').classList.add('open');
+}
+function closeBackupModal(){ document.getElementById('backup-modal').classList.remove('open'); }
+function copyBackupCmd(){
+  const cmd = document.getElementById('backup-cmd').textContent;
+  navigator.clipboard.writeText(cmd).then(()=>{
+    const btn=document.getElementById('copy-btn'); btn.textContent='복사됨 ✓'; btn.style.color='var(--c-accent)';
+    setTimeout(()=>{ btn.textContent='복사'; btn.style.color=''; },2000);
+  });
+}
+function openGitHub(){ window.open('https://github.com/'+GH_REPO,'_blank'); closeBackupModal(); }
 
 // ── Init ───────────────────────────────────────────────────────────────────────
 renderAll();
 renderOpsAll();
+fetchGitHubInfo();
 </script>
 </body>
 </html>
