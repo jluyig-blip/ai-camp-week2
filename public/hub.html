@@ -1,1 +1,582 @@
-<!DOCTYPE html><html><body>hub ok</body></html>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unified CS AI</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:       #0a0f1e;
+  --bg2:      #0f172a;
+  --bg3:      #0c1524;
+  --card:     #1e293b;
+  --border:   #1e293b;
+  --border2:  #334155;
+  --text:     #e2e8f0;
+  --muted:    #94a3b8;
+  --dim:      #64748b;
+  --faint:    #475569;
+  --rose:     #f43f5e;
+  --sky:      #38bdf8;
+  --green:    #22c55e;
+  --amber:    #f59e0b;
+  --blue:     #3b82f6;
+}
+body { background: var(--bg); color: var(--text); font-family: 'Pretendard','Apple SD Gothic Neo',sans-serif; font-size: 12px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+/* TOPBAR */
+.topbar { height: 40px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: flex-end; padding: 0 16px; gap: 12px; flex-shrink: 0; }
+.topbar .conn-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+.topbar .conn-label { font-size: 11px; color: var(--green); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* SHELL */
+.shell { display: flex; flex: 1; overflow: hidden; }
+
+/* SIDEBAR */
+.sidebar { width: 180px; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
+.sidebar-logo { padding: 14px; border-bottom: 1px solid var(--border); }
+.sidebar-logo .brand { color: var(--rose); font-weight: 700; font-size: 13px; }
+.sidebar-logo .sub   { color: var(--faint); font-size: 10px; margin-top: 2px; }
+.nav-item { padding: 8px 14px; display: flex; align-items: center; gap: 8px; color: var(--dim); cursor: pointer; font-size: 11px; transition: all .15s; }
+.nav-item:hover { background: var(--card); color: var(--text); }
+.nav-item.active { background: rgba(244,63,94,.1); color: var(--rose); border-right: 2px solid var(--rose); }
+.nav-item .icon { width: 16px; text-align: center; font-size: 13px; }
+.nav-badge { margin-left: auto; background: var(--rose); color: #fff; border-radius: 10px; padding: 1px 6px; font-size: 9px; font-weight: 700; }
+.sidebar-footer { margin-top: auto; padding: 12px 14px; border-top: 1px solid var(--border); }
+.mini-chart-bar { height: 32px; border-radius: 4px; background: linear-gradient(90deg,rgba(244,63,94,.1),rgba(244,63,94,.3)); position: relative; overflow: hidden; }
+.mini-chart-bar::after { content: '↗ 오늘 문의 +18%'; position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--rose); }
+.report-link { font-size: 10px; color: var(--rose); margin-top: 6px; cursor: pointer; }
+
+/* MAIN */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+/* KPI BAR */
+.kpi-bar { display: grid; grid-template-columns: repeat(4,1fr); background: var(--bg2); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.kpi + .kpi { border-left: 1px solid var(--border); }
+.kpi { padding: 10px 16px; }
+.kpi .kpi-label { color: var(--faint); font-size: 10px; margin-bottom: 4px; }
+.kpi .kpi-val   { font-size: 22px; font-weight: 700; line-height: 1; }
+.kpi .kpi-val small { font-size: 12px; font-weight: 400; }
+.kpi .kpi-delta { font-size: 10px; margin-top: 3px; }
+.delta-up   { color: var(--green); }
+.delta-down { color: var(--rose);  }
+.delta-warn { color: var(--amber); }
+
+/* CHANNEL BAR */
+.ch-bar { display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: var(--bg); border-bottom: 1px solid var(--border); flex-shrink: 0; overflow-x: auto; }
+.ch-tag { background: var(--card); border-radius: 20px; padding: 3px 10px; font-size: 10px; color: var(--muted); cursor: pointer; white-space: nowrap; border: 1px solid transparent; transition: all .15s; }
+.ch-tag:hover, .ch-tag.active { background: rgba(244,63,94,.1); color: var(--rose); border-color: rgba(244,63,94,.3); }
+
+/* 3-PANEL */
+.panels { flex: 1; display: grid; grid-template-columns: 220px 1fr 260px; overflow: hidden; }
+
+/* INQUIRY LIST */
+.inq-list { background: var(--bg3); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+.inq-search { padding: 8px 10px; border-bottom: 1px solid var(--border); }
+.inq-search input { width:100%;background:var(--card);border:1px solid var(--border2);border-radius:6px;padding:5px 8px;color:var(--text);font-size:11px;outline:none; }
+.inq-search input::placeholder { color: var(--faint); }
+.inq-meta-bar { padding: 5px 10px; font-size: 10px; color: var(--faint); border-bottom: 1px solid var(--border); display:flex;justify-content:space-between; }
+.inq-scroll { overflow-y: auto; flex: 1; }
+.inq-item { padding: 8px 10px; border-bottom: 1px solid rgba(30,41,59,.5); cursor: pointer; transition: background .1s; }
+.inq-item:hover { background: rgba(30,41,59,.6); }
+.inq-item.active { background: rgba(244,63,94,.07); border-left: 2px solid var(--rose); }
+.inq-item .row1 { display:flex;align-items:center;gap:5px;margin-bottom:3px; }
+.inq-title { flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px; }
+.urg { font-size: 9px; padding: 1px 5px; border-radius: 3px; font-weight: 700; flex-shrink:0; }
+.urg-긴급 { background:rgba(244,63,94,.2);color:var(--rose); }
+.urg-높음 { background:rgba(245,158,11,.2);color:var(--amber); }
+.urg-보통 { background:rgba(59,130,246,.2);color:var(--blue); }
+.inq-sub  { font-size: 9px; color: var(--faint); display:flex;gap:6px; }
+.inq-more { padding: 8px; text-align:center; font-size:10px; color:var(--sky); cursor:pointer; border-top:1px solid var(--border); }
+
+/* DETAIL */
+.detail { display:flex;flex-direction:column;overflow:hidden;background:var(--bg); }
+.detail-header { padding: 10px 14px; border-bottom:1px solid var(--border); }
+.detail-title-row { display:flex;align-items:center;gap:8px;margin-bottom:3px; }
+.detail-title { font-size:13px;font-weight:600; }
+.detail-meta  { font-size:10px;color:var(--faint); }
+.detail-actions-top { display:flex;gap:6px;margin-top:6px; }
+.detail-body { flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:8px; }
+.customer-bubble { background:var(--card);border-radius:8px;padding:10px;font-size:11px;color:var(--muted);line-height:1.7; }
+.wms-result-box { background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 10px; }
+.wms-result-box .wms-rtitle { color:var(--sky);font-weight:600;font-size:10px;margin-bottom:6px;display:flex;align-items:center;gap:6px; }
+.wms-row { display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(30,41,59,.4); }
+.wms-row:last-child { border-bottom:none; }
+.wms-row .k { color:var(--faint);font-size:10px; }
+.wms-row .v { color:var(--muted);font-size:10px;text-align:right; }
+.wms-row .v.ok   { color:var(--green); }
+.wms-row .v.warn { color:var(--amber); }
+.wms-row .v.err  { color:var(--rose);  }
+.draft-box { background:#0f2942;border:1px solid rgba(29,78,216,.4);border-radius:8px;overflow:hidden; }
+.draft-head { background:rgba(29,78,216,.15);padding:6px 10px;font-size:10px;color:#60a5fa;display:flex;align-items:center;gap:6px; }
+.draft-spinner { width:10px;height:10px;border:2px solid rgba(59,130,246,.2);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.draft-body { padding:10px;font-size:11px;color:#cbd5e1;line-height:1.75;min-height:60px;white-space:pre-wrap; }
+.placeholder-panel { flex:1;display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:12px; }
+.action-bar { padding:8px 14px;border-top:1px solid var(--border);display:flex;gap:6px;flex-shrink:0; }
+.btn { padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:none; }
+.btn-approve { background:var(--green);color:#fff; }
+.btn-edit    { background:var(--card);color:var(--muted);border:1px solid var(--border2); }
+.btn-hold    { background:var(--card);color:var(--muted);border:1px solid var(--border2); }
+.btn-no-auto { background:var(--card);color:var(--faint);border:1px solid var(--border2);margin-left:auto; }
+.btn-regen   { background:rgba(29,78,216,.15);color:#60a5fa;border:1px solid rgba(29,78,216,.3);font-size:10px;padding:4px 8px; }
+.hidden { display:none!important; }
+
+/* WMS SIDE PANEL */
+.wms-panel { background:var(--bg3);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden; }
+.wms-conn { padding:5px 10px;font-size:10px;color:var(--green);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:5px; }
+.wms-conn .dot { width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite; }
+.wms-tabs { display:flex;border-bottom:1px solid var(--border); }
+.wms-tab { flex:1;padding:7px 0;text-align:center;font-size:10px;color:var(--faint);cursor:pointer;border-bottom:2px solid transparent; }
+.wms-tab.active { color:var(--sky);border-bottom-color:var(--sky); }
+.wms-panel-body { flex:1;overflow-y:auto;padding:10px; }
+.wms-panel-row { display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(30,41,59,.4); }
+.wms-panel-row:last-child { border-bottom:none; }
+.wms-panel-row .pk { color:var(--faint);font-size:10px; }
+.wms-panel-row .pv { color:var(--muted);font-size:10px;text-align:right; }
+.wms-panel-row .pv.ok   { color:var(--green); }
+.wms-panel-row .pv.warn { color:var(--amber); }
+.flow-section { margin-top:10px;background:var(--card);border-radius:6px;padding:8px; }
+.flow-section .flow-title { font-size:10px;color:var(--faint);margin-bottom:6px; }
+.flow-steps { display:flex;align-items:center;gap:3px; }
+.flow-step { flex:1;text-align:center; }
+.flow-dot { width:20px;height:20px;border-radius:50%;margin:0 auto 3px;display:flex;align-items:center;justify-content:center;font-size:9px; }
+.flow-dot.done    { background:rgba(34,197,94,.15);color:var(--green);border:1px solid var(--green); }
+.flow-dot.current { background:rgba(59,130,246,.15);color:var(--blue);border:1px solid var(--blue); }
+.flow-dot.pending { background:var(--bg);color:var(--faint);border:1px solid var(--border2); }
+.flow-label { font-size:8px;color:var(--faint); }
+.flow-arr { color:var(--border2);font-size:10px; }
+.plan-box { margin-top:8px;background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.15);border-radius:4px;padding:6px;font-size:9px;color:var(--green); }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="conn-dot"></div>
+  <span class="conn-label">WMS 연동 정상</span>
+  <span style="color:var(--faint);font-size:10px">CS 운영팀 ▾</span>
+</div>
+
+<div class="shell">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="brand">✦ Unified CS AI</div>
+      <div class="sub">CS 자동화</div>
+    </div>
+    <nav>
+      <div class="nav-item active" data-nav="dashboard"><span class="icon">📊</span>대시보드</div>
+      <div class="nav-item" data-nav="inquiries"><span class="icon">📥</span>통합 문의함</div>
+      <div class="nav-item" data-nav="approval"><span class="icon">⏳</span>승인 대기<span class="nav-badge" id="badge-approval">0</span></div>
+      <div class="nav-item" data-nav="rules"><span class="icon">⚙️</span>자동화 규칙</div>
+      <div class="nav-item" data-nav="wms"><span class="icon">🔌</span>WMS 연동</div>
+      <div class="nav-item" data-nav="channels"><span class="icon">📡</span>채널 설정</div>
+      <div class="nav-item" data-nav="report"><span class="icon">📈</span>리포트</div>
+    </nav>
+    <div class="sidebar-footer">
+      <div style="font-size:10px;color:var(--faint);margin-bottom:6px">오늘의 요약</div>
+      <div class="mini-chart-bar"></div>
+      <div class="report-link">리포트 보기 →</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <!-- KPI -->
+    <div class="kpi-bar">
+      <div class="kpi">
+        <div class="kpi-label">오늘 문의</div>
+        <div class="kpi-val" id="kpi-today">—</div>
+        <div class="kpi-delta delta-up" id="kpi-today-delta"></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">평균 응답 시간</div>
+        <div class="kpi-val" id="kpi-resp">—</div>
+        <div class="kpi-delta delta-down" id="kpi-resp-delta"></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">승인 대기</div>
+        <div class="kpi-val" id="kpi-pending">—</div>
+        <div class="kpi-delta delta-warn" id="kpi-pending-delta"></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">자동화율 (초안 기준)</div>
+        <div class="kpi-val" id="kpi-auto">—</div>
+        <div class="kpi-delta delta-up" id="kpi-auto-delta"></div>
+      </div>
+    </div>
+
+    <!-- CHANNEL FILTER -->
+    <div class="ch-bar" id="ch-bar">
+      <span style="font-size:10px;color:var(--faint);margin-right:4px">채널별:</span>
+    </div>
+
+    <!-- 3-PANEL -->
+    <div class="panels">
+
+      <!-- INQUIRY LIST -->
+      <div class="inq-list">
+        <div class="inq-search">
+          <input id="search-input" placeholder="문의, 주문번호, 고객명으로 검색하세요" />
+        </div>
+        <div class="inq-meta-bar">
+          <span id="inq-count-label">전체 0건</span>
+          <span style="color:var(--sky);cursor:pointer">필터 ▼</span>
+        </div>
+        <div class="inq-scroll" id="inq-scroll"></div>
+        <div class="inq-more" id="inq-more" style="display:none">더보기 →</div>
+      </div>
+
+      <!-- DETAIL -->
+      <div class="detail">
+        <div class="placeholder-panel" id="detail-placeholder">
+          문의를 선택하면 AI 답변 초안이 생성됩니다
+        </div>
+        <div id="detail-content" class="hidden" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+          <div class="detail-header">
+            <div class="detail-title-row">
+              <span class="urg" id="d-urgency"></span>
+              <span class="detail-title" id="d-title"></span>
+            </div>
+            <div class="detail-meta" id="d-meta"></div>
+            <div class="detail-actions-top">
+              <button class="btn btn-regen" id="btn-regen">↻ 다시 생성</button>
+            </div>
+          </div>
+          <div class="detail-body" id="detail-body">
+            <div class="customer-bubble" id="d-customer-msg"></div>
+            <div class="wms-result-box hidden" id="wms-result-box">
+              <div class="wms-rtitle">
+                <span>📦 WMS 조회 결과</span>
+                <span style="font-size:9px;color:var(--green)">● 실시간</span>
+              </div>
+              <div id="wms-result-rows"></div>
+            </div>
+            <div class="draft-box" id="draft-box">
+              <div class="draft-head">
+                <div class="draft-spinner" id="draft-spinner"></div>
+                <span id="draft-status">✨ AI 답변 초안 생성 중...</span>
+              </div>
+              <div class="draft-body" id="draft-body"></div>
+            </div>
+          </div>
+          <div class="action-bar">
+            <button class="btn btn-approve">✓ 검수 후 승인</button>
+            <button class="btn btn-edit">✏ 수정</button>
+            <button class="btn btn-hold">⏸ 보류</button>
+            <button class="btn btn-no-auto">✕ 자동 발송 아님</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- WMS SIDE PANEL -->
+      <div class="wms-panel">
+        <div class="wms-conn"><div class="dot"></div>연동 상태: 정상</div>
+        <div class="wms-tabs">
+          <div class="wms-tab active" data-tab="order">주문 정보</div>
+          <div class="wms-tab" data-tab="stock">재고 정보</div>
+          <div class="wms-tab" data-tab="delivery">배송 정보</div>
+          <div class="wms-tab" data-tab="return">반품/교환</div>
+        </div>
+        <div class="wms-panel-body" id="wms-panel-body">
+          <div style="color:var(--faint);font-size:11px;padding:8px 0">문의를 선택하면 WMS 정보가 표시됩니다.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────
+let allInquiries = [];
+let activeFilter = 'all';
+let activeSearch = '';
+let selectedInquiry = null;
+let currentWmsData = {};
+let activeWmsTab = 'order';
+
+// ── Boot ───────────────────────────────────────────────────────────
+async function boot() {
+  await Promise.all([loadStats(), loadInquiries()]);
+}
+
+// ── Stats / KPI ────────────────────────────────────────────────────
+async function loadStats() {
+  const s = await fetch('/api/stats').then(r => r.json());
+  const mins = Math.floor(s.avgResponseSec / 60);
+  const secs = s.avgResponseSec % 60;
+  document.getElementById('kpi-today').innerHTML = s.todayCount.toLocaleString();
+  document.getElementById('kpi-today-delta').textContent = `전일 대비 ▲${s.deltaToday}%`;
+  document.getElementById('kpi-resp').innerHTML = `${mins}<small>분 ${secs}초</small>`;
+  document.getElementById('kpi-resp-delta').textContent = `전일 대비 ▼${Math.abs(s.deltaResponse)}%`;
+  document.getElementById('kpi-pending').textContent = s.pendingApproval;
+  document.getElementById('kpi-pending-delta').textContent = `긴급 ${s.urgentCount}건`;
+  document.getElementById('badge-approval').textContent = s.pendingApproval;
+  document.getElementById('kpi-auto').innerHTML = `${s.automationRate}<small>%</small>`;
+  document.getElementById('kpi-auto-delta').textContent = `전일 대비 ▲${s.deltaAuto}%`;
+
+  // Channel tags
+  const bar = document.getElementById('ch-bar');
+  const allTag = document.createElement('div');
+  allTag.className = 'ch-tag active';
+  allTag.textContent = `전체 ${s.todayCount.toLocaleString()}`;
+  allTag.dataset.ch = 'all';
+  allTag.onclick = () => filterByChannel('all', allTag);
+  bar.appendChild(allTag);
+  for (const ch of s.channels) {
+    const tag = document.createElement('div');
+    tag.className = 'ch-tag';
+    tag.textContent = `${ch.name} ${ch.count}`;
+    tag.dataset.ch = ch.name;
+    tag.onclick = () => filterByChannel(ch.name, tag);
+    bar.appendChild(tag);
+  }
+}
+
+// ── Inquiries ──────────────────────────────────────────────────────
+async function loadInquiries() {
+  allInquiries = await fetch('/api/inquiries').then(r => r.json());
+  renderList();
+}
+
+function filterByChannel(ch, el) {
+  activeFilter = ch;
+  document.querySelectorAll('.ch-tag').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderList();
+}
+
+function renderList() {
+  const q = activeSearch.toLowerCase();
+  const items = allInquiries.filter(inq => {
+    if (activeFilter !== 'all' && inq.channel !== activeFilter) return false;
+    if (q && !inq.content.toLowerCase().includes(q) &&
+             !inq.orderNo.includes(q) &&
+             !inq.type.toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  document.getElementById('inq-count-label').textContent = `전체 ${items.length}건`;
+
+  const scroll = document.getElementById('inq-scroll');
+  scroll.innerHTML = '';
+  for (const inq of items) {
+    const el = document.createElement('div');
+    el.className = 'inq-item' + (selectedInquiry?.id === inq.id ? ' active' : '');
+    el.innerHTML = `
+      <div class="row1">
+        <span class="urg urg-${inq.urgency}">${inq.urgency}</span>
+        <span class="inq-title">${inq.type}</span>
+      </div>
+      <div class="inq-sub">
+        <span>${inq.channel}</span>
+        <span>${inq.customer} · ${inq.time}</span>
+      </div>`;
+    el.onclick = () => selectInquiry(inq);
+    scroll.appendChild(el);
+  }
+}
+
+document.getElementById('search-input').addEventListener('input', e => {
+  activeSearch = e.target.value;
+  renderList();
+});
+
+// ── Select inquiry → generate draft ───────────────────────────────
+function selectInquiry(inq) {
+  selectedInquiry = inq;
+  currentWmsData = {};
+  renderList();
+  showDetailShell(inq);
+  generateDraft(inq);
+}
+
+function showDetailShell(inq) {
+  document.getElementById('detail-placeholder').classList.add('hidden');
+  const dc = document.getElementById('detail-content');
+  dc.classList.remove('hidden');
+  dc.style.display = 'flex';
+
+  document.getElementById('d-urgency').className = `urg urg-${inq.urgency}`;
+  document.getElementById('d-urgency').textContent = inq.urgency;
+  document.getElementById('d-title').textContent = inq.type;
+  document.getElementById('d-meta').textContent =
+    `${inq.customer} · 주문번호 ${inq.orderNo} · ${inq.time}`;
+  document.getElementById('d-customer-msg').textContent = inq.content;
+
+  document.getElementById('wms-result-box').classList.add('hidden');
+  document.getElementById('wms-result-rows').innerHTML = '';
+  document.getElementById('draft-body').textContent = '';
+  document.getElementById('draft-status').textContent = '✨ AI 답변 초안 생성 중...';
+  document.getElementById('draft-spinner').style.display = '';
+
+  renderWmsPanel({});
+}
+
+function generateDraft(inq) {
+  const inquiry = [
+    `채널: ${inq.channel}`,
+    `접수: ${inq.received}`,
+    `주문번호: ${inq.orderNo}`,
+    '',
+    `"${inq.content}"`,
+  ].join('\n');
+
+  document.getElementById('btn-regen').onclick = () => {
+    document.getElementById('draft-body').textContent = '';
+    document.getElementById('draft-spinner').style.display = '';
+    document.getElementById('draft-status').textContent = '✨ AI 답변 초안 생성 중...';
+    document.getElementById('wms-result-box').classList.add('hidden');
+    document.getElementById('wms-result-rows').innerHTML = '';
+    currentWmsData = {};
+    fetchSSE('/api/generate', inquiry, inq);
+  };
+
+  fetchSSE('/api/generate', inquiry, inq);
+}
+
+async function fetchSSE(url, inquiry, inq) {
+  const draftStatus = document.getElementById('draft-status');
+  const spinner = document.getElementById('draft-spinner');
+
+  try {
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ inquiry }),
+    });
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream: true });
+      const lines = buf.split('\n');
+      buf = lines.pop() ?? '';
+
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        try {
+          const evt = JSON.parse(line.slice(6));
+          handleEvent(evt, inq);
+        } catch {}
+      }
+    }
+  } catch (err) {
+    draftStatus.textContent = '⚠ 생성 오류: ' + err.message;
+    spinner.style.display = 'none';
+  }
+}
+
+function handleEvent(evt, inq) {
+  if (evt.tool_call) {
+    const box = document.getElementById('wms-result-box');
+    box.classList.remove('hidden');
+    const existing = document.getElementById('wms-row-' + evt.tool_call.name);
+    if (!existing) {
+      const row = document.createElement('div');
+      row.className = 'wms-row';
+      row.id = 'wms-row-' + evt.tool_call.name;
+      row.innerHTML = `<span class="k">${toolLabel(evt.tool_call.name)}</span><span class="v" style="color:var(--amber)">조회 중...</span>`;
+      document.getElementById('wms-result-rows').appendChild(row);
+    }
+  }
+
+  if (evt.tool_result) {
+    const row = document.getElementById('wms-row-' + evt.tool_result.name);
+    if (row) {
+      const valEl = row.querySelector('.v');
+      valEl.textContent = evt.tool_result.ok ? '조회 완료 ✓' : '조회 실패 ✗';
+      valEl.className = 'v ' + (evt.tool_result.ok ? 'ok' : 'err');
+    }
+  }
+
+  if (evt.text) {
+    document.getElementById('draft-body').textContent += evt.text;
+    document.getElementById('draft-spinner').style.display = 'none';
+    document.getElementById('draft-status').textContent = '✨ AI 답변 초안 — claude-sonnet-4-6';
+  }
+
+  if (evt.done) {
+    document.getElementById('draft-spinner').style.display = 'none';
+    renderWmsPanel(buildWmsFromInquiry(inq));
+  }
+
+  if (evt.error) {
+    document.getElementById('draft-status').textContent = '⚠ ' + evt.error;
+    document.getElementById('draft-spinner').style.display = 'none';
+  }
+}
+
+function toolLabel(name) {
+  return { get_stock: '재고 조회', get_order_status: '주문 상태 조회',
+           simulate_return: '반품 시뮬레이션', simulate_cancel: '취소 시뮬레이션' }[name] ?? name;
+}
+
+// ── WMS Side Panel ─────────────────────────────────────────────────
+function buildWmsFromInquiry(inq) {
+  return {
+    order:    [['주문번호', inq.orderNo], ['주문일시', inq.received], ['채널', inq.channel], ['유형', inq.type]],
+    stock:    [['상품', '조회 완료'], ['재고 상태', '보유']],
+    delivery: [['배송 상태', 'WMS 조회 결과 참조'], ['택배사', '한진택배']],
+    return:   [['반품 가능', '수령 후 7일 이내'], ['환불 방식', '원결제 수단']],
+  };
+}
+
+function renderWmsPanel(data) {
+  currentWmsData = data;
+  const body = document.getElementById('wms-panel-body');
+  const rows = data[activeWmsTab] ?? [];
+
+  body.innerHTML = '';
+  for (const [k, v] of rows) {
+    const row = document.createElement('div');
+    row.className = 'wms-panel-row';
+    row.innerHTML = `<span class="pk">${k}</span><span class="pv">${v}</span>`;
+    body.appendChild(row);
+  }
+
+  if (Object.keys(data).length === 0) {
+    body.innerHTML = '<div style="color:var(--faint);font-size:11px;padding:8px 0">문의를 선택하면 WMS 정보가 표시됩니다.</div>';
+    return;
+  }
+
+  // 자동화 플로우
+  const flow = document.createElement('div');
+  flow.className = 'flow-section';
+  flow.innerHTML = `
+    <div class="flow-title">자동화 플로우 상태</div>
+    <div class="flow-steps">
+      <div class="flow-step"><div class="flow-dot done">✓</div><div class="flow-label">수신</div></div>
+      <div class="flow-arr">→</div>
+      <div class="flow-step"><div class="flow-dot done">✓</div><div class="flow-label">초안</div></div>
+      <div class="flow-arr">→</div>
+      <div class="flow-step"><div class="flow-dot current">●</div><div class="flow-label">승인</div></div>
+      <div class="flow-arr">→</div>
+      <div class="flow-step"><div class="flow-dot pending">○</div><div class="flow-label">발송</div></div>
+    </div>
+    <div class="plan-box">고신뢰 시나리오부터 단계적 자동 발송 확대 예정</div>`;
+  body.appendChild(flow);
+}
+
+// WMS tab clicks
+document.querySelectorAll('.wms-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.wms-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    activeWmsTab = tab.dataset.tab;
+    renderWmsPanel(currentWmsData);
+  });
+});
+
+boot();
+</script>
+</body>
+</html>
