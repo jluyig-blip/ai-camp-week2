@@ -55,7 +55,7 @@ if (!fs.existsSync(BOARD_DIR)) fs.mkdirSync(BOARD_DIR, { recursive: true });
 // half-written file and two writers can't interleave bytes.
 function writeTaskFileAtomic(filePath, obj) {
   const tmp = filePath + ".tmp." + process.pid;
-  fs.writeFileSync(tmp, JSON.stringify(obj, null, 2));
+  fs.writeFileSync(tmp, JSON.stringify(obj, null, 2), 'utf-8');
   fs.renameSync(tmp, filePath);
 }
 // Cross-process lock around a read-modify-write on one task file. mkdir is
@@ -1611,9 +1611,9 @@ function watchTasks() {
 // ── Request body parser ──────────────────────────────────────────────────────
 function parseBody(req) {
   return new Promise((resolve, reject) => {
-    let body = "";
-    req.on("data", (chunk) => (body += chunk));
-    req.on("end", () => { try { resolve(body ? JSON.parse(body) : {}); } catch { reject(new Error("Invalid JSON")); } });
+    const chunks = [];
+    req.on("data", (chunk) => chunks.push(chunk));
+    req.on("end", () => { try { const body = Buffer.concat(chunks).toString("utf-8"); resolve(body ? JSON.parse(body) : {}); } catch { reject(new Error("Invalid JSON")); } });
   });
 }
 

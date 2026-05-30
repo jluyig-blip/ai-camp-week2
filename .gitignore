@@ -2,3 +2,13 @@ node_modules/
 .env
 *.png
 ui-test.mjs
+
+# API 키 / 시크릿 — 절대 커밋 금지
+attrangs
+config.js
+
+# 고객 개인정보 포함 파일
+public/inquiries-data.json
+
+# 브레인스토밍 임시 파일
+.superpowers/

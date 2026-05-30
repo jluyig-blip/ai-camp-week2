@@ -23,31 +23,31 @@
   --amber:    #f59e0b;
   --blue:     #3b82f6;
 }
-body { background: var(--bg); color: var(--text); font-family: 'Pretendard','Apple SD Gothic Neo',sans-serif; font-size: 12px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+body { background: var(--bg); color: var(--text); font-family: 'Pretendard','Apple SD Gothic Neo',sans-serif; font-size: 14px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
 /* TOPBAR */
-.topbar { height: 40px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: flex-end; padding: 0 16px; gap: 12px; flex-shrink: 0; }
-.topbar .conn-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
-.topbar .conn-label { font-size: 11px; color: var(--green); }
+.topbar { height: 44px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: flex-end; padding: 0 16px; gap: 12px; flex-shrink: 0; }
+.topbar .conn-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+.topbar .conn-label { font-size: 13px; color: var(--green); }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
 /* SHELL */
 .shell { display: flex; flex: 1; overflow: hidden; }
 
 /* SIDEBAR */
-.sidebar { width: 180px; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
-.sidebar-logo { padding: 14px; border-bottom: 1px solid var(--border); }
-.sidebar-logo .brand { color: var(--rose); font-weight: 700; font-size: 13px; }
-.sidebar-logo .sub   { color: var(--faint); font-size: 10px; margin-top: 2px; }
-.nav-item { padding: 8px 14px; display: flex; align-items: center; gap: 8px; color: var(--dim); cursor: pointer; font-size: 11px; transition: all .15s; }
+.sidebar { width: 192px; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
+.sidebar-logo { padding: 16px 14px; border-bottom: 1px solid var(--border); }
+.sidebar-logo .brand { color: var(--rose); font-weight: 700; font-size: 15px; }
+.sidebar-logo .sub   { color: var(--faint); font-size: 12px; margin-top: 3px; }
+.nav-item { padding: 10px 14px; display: flex; align-items: center; gap: 9px; color: var(--dim); cursor: pointer; font-size: 13px; transition: all .15s; }
 .nav-item:hover { background: var(--card); color: var(--text); }
 .nav-item.active { background: rgba(244,63,94,.1); color: var(--rose); border-right: 2px solid var(--rose); }
-.nav-item .icon { width: 16px; text-align: center; font-size: 13px; }
-.nav-badge { margin-left: auto; background: var(--rose); color: #fff; border-radius: 10px; padding: 1px 6px; font-size: 9px; font-weight: 700; }
-.sidebar-footer { margin-top: auto; padding: 12px 14px; border-top: 1px solid var(--border); }
-.mini-chart-bar { height: 32px; border-radius: 4px; background: linear-gradient(90deg,rgba(244,63,94,.1),rgba(244,63,94,.3)); position: relative; overflow: hidden; }
-.mini-chart-bar::after { content: '↗ 오늘 문의 +18%'; position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--rose); }
-.report-link { font-size: 10px; color: var(--rose); margin-top: 6px; cursor: pointer; }
+.nav-item .icon { width: 18px; text-align: center; font-size: 14px; }
+.nav-badge { margin-left: auto; background: var(--rose); color: #fff; border-radius: 10px; padding: 2px 7px; font-size: 11px; font-weight: 700; }
+.sidebar-footer { margin-top: auto; padding: 14px; border-top: 1px solid var(--border); }
+.mini-chart-bar { height: 34px; border-radius: 4px; background: linear-gradient(90deg,rgba(244,63,94,.1),rgba(244,63,94,.3)); position: relative; overflow: hidden; }
+.mini-chart-bar::after { content: '↗ 오늘 문의 +18%'; position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--rose); }
+.report-link { font-size: 12px; color: var(--rose); margin-top: 8px; cursor: pointer; }
 
 /* MAIN */
 .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
@@ -55,100 +55,107 @@ body { background: var(--bg); color: var(--text); font-family: 'Pretendard','App
 /* KPI BAR */
 .kpi-bar { display: grid; grid-template-columns: repeat(4,1fr); background: var(--bg2); border-bottom: 1px solid var(--border); flex-shrink: 0; }
 .kpi + .kpi { border-left: 1px solid var(--border); }
-.kpi { padding: 10px 16px; }
-.kpi .kpi-label { color: var(--faint); font-size: 10px; margin-bottom: 4px; }
-.kpi .kpi-val   { font-size: 22px; font-weight: 700; line-height: 1; }
-.kpi .kpi-val small { font-size: 12px; font-weight: 400; }
-.kpi .kpi-delta { font-size: 10px; margin-top: 3px; }
+.kpi { padding: 12px 18px; }
+.kpi .kpi-label { color: var(--faint); font-size: 12px; margin-bottom: 5px; }
+.kpi .kpi-val   { font-size: 30px; font-weight: 700; line-height: 1; }
+.kpi .kpi-val small { font-size: 15px; font-weight: 400; }
+.kpi .kpi-delta { font-size: 12px; margin-top: 4px; }
 .delta-up   { color: var(--green); }
 .delta-down { color: var(--rose);  }
 .delta-warn { color: var(--amber); }
 
 /* CHANNEL BAR */
-.ch-bar { display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: var(--bg); border-bottom: 1px solid var(--border); flex-shrink: 0; overflow-x: auto; }
-.ch-tag { background: var(--card); border-radius: 20px; padding: 3px 10px; font-size: 10px; color: var(--muted); cursor: pointer; white-space: nowrap; border: 1px solid transparent; transition: all .15s; }
+.ch-bar { display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--bg); border-bottom: 1px solid var(--border); flex-shrink: 0; overflow-x: auto; }
+.ch-tag { background: var(--card); border-radius: 20px; padding: 5px 14px; font-size: 12px; color: var(--muted); cursor: pointer; white-space: nowrap; border: 1px solid transparent; transition: all .15s; display:inline-flex;align-items:center;gap:7px; }
 .ch-tag:hover, .ch-tag.active { background: rgba(244,63,94,.1); color: var(--rose); border-color: rgba(244,63,94,.3); }
+.ch-icon { width:18px;height:18px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;letter-spacing:-.5px; }
+.ch-icon-자사몰    { background:#ff6b35;color:#fff; }
+.ch-icon-네이버톡톡 { background:#03c75a;color:#fff; }
+.ch-icon-카카오상담톡{ background:#fee500;color:#3c1e1e; }
+.ch-icon-지그재그  { background:#7b5cc5;color:#fff; }
+.ch-icon-에이블리  { background:#ff4e7e;color:#fff; }
+.ch-icon-inq { width:15px;height:15px;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex-shrink:0; }
 
 /* 3-PANEL */
-.panels { flex: 1; display: grid; grid-template-columns: 220px 1fr 260px; overflow: hidden; }
+.panels { flex: 1; display: grid; grid-template-columns: 240px 1fr 280px; overflow: hidden; }
 
 /* INQUIRY LIST */
 .inq-list { background: var(--bg3); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
-.inq-search { padding: 8px 10px; border-bottom: 1px solid var(--border); }
-.inq-search input { width:100%;background:var(--card);border:1px solid var(--border2);border-radius:6px;padding:5px 8px;color:var(--text);font-size:11px;outline:none; }
+.inq-search { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+.inq-search input { width:100%;background:var(--card);border:1px solid var(--border2);border-radius:7px;padding:7px 10px;color:var(--text);font-size:13px;outline:none; }
 .inq-search input::placeholder { color: var(--faint); }
-.inq-meta-bar { padding: 5px 10px; font-size: 10px; color: var(--faint); border-bottom: 1px solid var(--border); display:flex;justify-content:space-between; }
+.inq-meta-bar { padding: 7px 12px; font-size: 12px; color: var(--faint); border-bottom: 1px solid var(--border); display:flex;justify-content:space-between; }
 .inq-scroll { overflow-y: auto; flex: 1; }
-.inq-item { padding: 8px 10px; border-bottom: 1px solid rgba(30,41,59,.5); cursor: pointer; transition: background .1s; }
+.inq-item { padding: 10px 12px; border-bottom: 1px solid rgba(30,41,59,.5); cursor: pointer; transition: background .1s; }
 .inq-item:hover { background: rgba(30,41,59,.6); }
 .inq-item.active { background: rgba(244,63,94,.07); border-left: 2px solid var(--rose); }
-.inq-item .row1 { display:flex;align-items:center;gap:5px;margin-bottom:3px; }
-.inq-title { flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px; }
-.urg { font-size: 9px; padding: 1px 5px; border-radius: 3px; font-weight: 700; flex-shrink:0; }
+.inq-item .row1 { display:flex;align-items:center;gap:6px;margin-bottom:4px; }
+.inq-title { flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:500; }
+.urg { font-size: 11px; padding: 2px 7px; border-radius: 4px; font-weight: 700; flex-shrink:0; }
 .urg-긴급 { background:rgba(244,63,94,.2);color:var(--rose); }
 .urg-높음 { background:rgba(245,158,11,.2);color:var(--amber); }
 .urg-보통 { background:rgba(59,130,246,.2);color:var(--blue); }
-.inq-sub  { font-size: 9px; color: var(--faint); display:flex;gap:6px; }
-.inq-more { padding: 8px; text-align:center; font-size:10px; color:var(--sky); cursor:pointer; border-top:1px solid var(--border); }
+.inq-sub  { font-size: 11px; color: var(--faint); display:flex;gap:7px; }
+.inq-more { padding: 10px; text-align:center; font-size:12px; color:var(--sky); cursor:pointer; border-top:1px solid var(--border); }
 
 /* DETAIL */
 .detail { display:flex;flex-direction:column;overflow:hidden;background:var(--bg); }
-.detail-header { padding: 10px 14px; border-bottom:1px solid var(--border); }
-.detail-title-row { display:flex;align-items:center;gap:8px;margin-bottom:3px; }
-.detail-title { font-size:13px;font-weight:600; }
-.detail-meta  { font-size:10px;color:var(--faint); }
-.detail-actions-top { display:flex;gap:6px;margin-top:6px; }
-.detail-body { flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:8px; }
-.customer-bubble { background:var(--card);border-radius:8px;padding:10px;font-size:11px;color:var(--muted);line-height:1.7; }
-.wms-result-box { background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 10px; }
-.wms-result-box .wms-rtitle { color:var(--sky);font-weight:600;font-size:10px;margin-bottom:6px;display:flex;align-items:center;gap:6px; }
-.wms-row { display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(30,41,59,.4); }
+.detail-header { padding: 12px 16px; border-bottom:1px solid var(--border); }
+.detail-title-row { display:flex;align-items:center;gap:8px;margin-bottom:4px; }
+.detail-title { font-size:15px;font-weight:600; }
+.detail-meta  { font-size:12px;color:var(--faint); }
+.detail-actions-top { display:flex;gap:6px;margin-top:8px; }
+.detail-body { flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:10px; }
+.customer-bubble { background:var(--card);border-radius:8px;padding:12px;font-size:13px;color:var(--muted);line-height:1.75; }
+.wms-result-box { background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px 12px; }
+.wms-result-box .wms-rtitle { color:var(--sky);font-weight:600;font-size:12px;margin-bottom:8px;display:flex;align-items:center;gap:6px; }
+.wms-row { display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(30,41,59,.4); }
 .wms-row:last-child { border-bottom:none; }
-.wms-row .k { color:var(--faint);font-size:10px; }
-.wms-row .v { color:var(--muted);font-size:10px;text-align:right; }
+.wms-row .k { color:var(--faint);font-size:12px; }
+.wms-row .v { color:var(--muted);font-size:12px;text-align:right; }
 .wms-row .v.ok   { color:var(--green); }
 .wms-row .v.warn { color:var(--amber); }
 .wms-row .v.err  { color:var(--rose);  }
 .draft-box { background:#0f2942;border:1px solid rgba(29,78,216,.4);border-radius:8px;overflow:hidden; }
-.draft-head { background:rgba(29,78,216,.15);padding:6px 10px;font-size:10px;color:#60a5fa;display:flex;align-items:center;gap:6px; }
-.draft-spinner { width:10px;height:10px;border:2px solid rgba(59,130,246,.2);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite; }
+.draft-head { background:rgba(29,78,216,.15);padding:8px 12px;font-size:12px;color:#60a5fa;display:flex;align-items:center;gap:6px; }
+.draft-spinner { width:11px;height:11px;border:2px solid rgba(59,130,246,.2);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite; }
 @keyframes spin { to { transform:rotate(360deg); } }
-.draft-body { padding:10px;font-size:11px;color:#cbd5e1;line-height:1.75;min-height:60px;white-space:pre-wrap; }
-.placeholder-panel { flex:1;display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:12px; }
-.action-bar { padding:8px 14px;border-top:1px solid var(--border);display:flex;gap:6px;flex-shrink:0; }
-.btn { padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:none; }
+.draft-body { padding:12px;font-size:13px;color:#cbd5e1;line-height:1.8;min-height:60px;white-space:pre-wrap; }
+.placeholder-panel { flex:1;display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:14px; }
+.action-bar { padding:10px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0; }
+.btn { padding:7px 14px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;border:none; }
 .btn-approve { background:var(--green);color:#fff; }
 .btn-edit    { background:var(--card);color:var(--muted);border:1px solid var(--border2); }
 .btn-hold    { background:var(--card);color:var(--muted);border:1px solid var(--border2); }
 .btn-no-auto { background:var(--card);color:var(--faint);border:1px solid var(--border2);margin-left:auto; }
-.btn-regen   { background:rgba(29,78,216,.15);color:#60a5fa;border:1px solid rgba(29,78,216,.3);font-size:10px;padding:4px 8px; }
+.btn-regen   { background:rgba(29,78,216,.15);color:#60a5fa;border:1px solid rgba(29,78,216,.3);font-size:12px;padding:5px 10px; }
 .hidden { display:none!important; }
 
 /* WMS SIDE PANEL */
 .wms-panel { background:var(--bg3);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden; }
-.wms-conn { padding:5px 10px;font-size:10px;color:var(--green);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:5px; }
-.wms-conn .dot { width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite; }
+.wms-conn { padding:7px 12px;font-size:12px;color:var(--green);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px; }
+.wms-conn .dot { width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite; }
 .wms-tabs { display:flex;border-bottom:1px solid var(--border); }
-.wms-tab { flex:1;padding:7px 0;text-align:center;font-size:10px;color:var(--faint);cursor:pointer;border-bottom:2px solid transparent; }
+.wms-tab { flex:1;padding:8px 0;text-align:center;font-size:12px;color:var(--faint);cursor:pointer;border-bottom:2px solid transparent; }
 .wms-tab.active { color:var(--sky);border-bottom-color:var(--sky); }
-.wms-panel-body { flex:1;overflow-y:auto;padding:10px; }
-.wms-panel-row { display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(30,41,59,.4); }
+.wms-panel-body { flex:1;overflow-y:auto;padding:12px; }
+.wms-panel-row { display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(30,41,59,.4); }
 .wms-panel-row:last-child { border-bottom:none; }
-.wms-panel-row .pk { color:var(--faint);font-size:10px; }
-.wms-panel-row .pv { color:var(--muted);font-size:10px;text-align:right; }
+.wms-panel-row .pk { color:var(--faint);font-size:12px; }
+.wms-panel-row .pv { color:var(--muted);font-size:12px;text-align:right; }
 .wms-panel-row .pv.ok   { color:var(--green); }
 .wms-panel-row .pv.warn { color:var(--amber); }
-.flow-section { margin-top:10px;background:var(--card);border-radius:6px;padding:8px; }
-.flow-section .flow-title { font-size:10px;color:var(--faint);margin-bottom:6px; }
-.flow-steps { display:flex;align-items:center;gap:3px; }
+.flow-section { margin-top:12px;background:var(--card);border-radius:6px;padding:10px; }
+.flow-section .flow-title { font-size:12px;color:var(--faint);margin-bottom:8px; }
+.flow-steps { display:flex;align-items:center;gap:4px; }
 .flow-step { flex:1;text-align:center; }
-.flow-dot { width:20px;height:20px;border-radius:50%;margin:0 auto 3px;display:flex;align-items:center;justify-content:center;font-size:9px; }
+.flow-dot { width:24px;height:24px;border-radius:50%;margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:11px; }
 .flow-dot.done    { background:rgba(34,197,94,.15);color:var(--green);border:1px solid var(--green); }
 .flow-dot.current { background:rgba(59,130,246,.15);color:var(--blue);border:1px solid var(--blue); }
 .flow-dot.pending { background:var(--bg);color:var(--faint);border:1px solid var(--border2); }
-.flow-label { font-size:8px;color:var(--faint); }
-.flow-arr { color:var(--border2);font-size:10px; }
-.plan-box { margin-top:8px;background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.15);border-radius:4px;padding:6px;font-size:9px;color:var(--green); }
+.flow-label { font-size:10px;color:var(--faint); }
+.flow-arr { color:var(--border2);font-size:12px; }
+.plan-box { margin-top:10px;background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.15);border-radius:4px;padding:8px;font-size:11px;color:var(--green); }
 #detail-content { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
 </style>
 </head>
@@ -220,8 +227,9 @@ body { background: var(--bg); color: var(--text); font-family: 'Pretendard','App
 
       <!-- INQUIRY LIST -->
       <div class="inq-list">
-        <div class="inq-search">
-          <input id="search-input" placeholder="문의, 주문번호, 고객명으로 검색하세요" />
+        <div class="inq-search" style="display:flex;gap:6px">
+          <input id="search-input" placeholder="문의, 주문번호, 고객명으로 검색하세요" style="flex:1" />
+          <button onclick="openTestModal()" style="background:var(--rose);color:#fff;border:none;border-radius:6px;padding:0 10px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">+ 테스트</button>
         </div>
         <div class="inq-meta-bar">
           <span id="inq-count-label">전체 0건</span>
@@ -292,6 +300,56 @@ body { background: var(--bg); color: var(--text); font-family: 'Pretendard','App
 </div>
 
 <script>
+// ── Channel icons ─────────────────────────────────────────────────
+const CH_FAVICON = {
+  '자사몰':      '/attrangs-logo.jpeg',
+  '네이버 톡톡':  'https://www.google.com/s2/favicons?domain=talk.naver.com&sz=32',
+  '카카오 상담톡':'https://www.google.com/s2/favicons?domain=talk.kakao.com&sz=32',
+  '지그재그':    'https://www.google.com/s2/favicons?domain=zigzag.kr&sz=32',
+  '에이블리':    'https://www.google.com/s2/favicons?domain=a-bly.com&sz=32',
+};
+// 글자 fallback (파비콘 로드 실패 시)
+const CH_FALLBACK = { '자사몰':'샵', '네이버 톡톡':'N', '카카오 상담톡':'K', '지그재그':'Z', '에이블리':'A' };
+const CH_COLOR = {
+  '자사몰':'#fff', '네이버 톡톡':'#03c75a', '카카오 상담톡':'#fee500',
+  '지그재그':'#1a1a1a', '에이블리':'#ff4e7e',
+};
+
+function makeChIcon(name, size) {
+  const url = CH_FAVICON[name];
+  const isWhiteBg = CH_COLOR[name] === '#fff';
+  const wrap = document.createElement('span');
+  const border = isWhiteBg ? ';border:1.5px solid rgba(255,255,255,.25);box-sizing:border-box' : '';
+  wrap.style.cssText = `width:${size}px;height:${size}px;border-radius:${Math.round(size*0.28)}px;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:${CH_COLOR[name]??'#334155'}${border}`;
+
+  // 자사몰 소형(≤15px)은 로고 대신 아뜨랑스 퍼플 "A"로 표시
+  if (url && !(name === '자사몰' && size <= 15)) {
+    const img = document.createElement('img');
+    img.src = url;
+    img.style.cssText = `width:${size}px;height:${size}px;object-fit:cover`;
+    img.onerror = () => {
+      img.remove();
+      wrap.style.background = '#7b5cf6';
+      wrap.style.fontSize = `${Math.round(size*0.55)}px`;
+      wrap.style.color = '#fff';
+      wrap.style.fontWeight = '900';
+      wrap.textContent = CH_FALLBACK[name] ?? name[0];
+    };
+    wrap.appendChild(img);
+  } else {
+    // 소형 자사몰: 아뜨랑스 퍼플 배경에 "A"
+    if (name === '자사몰') {
+      wrap.style.background = '#7b5cf6';
+      wrap.style.border = 'none';
+    }
+    wrap.style.fontSize = `${Math.round(size*0.58)}px`;
+    wrap.style.color = name === '카카오 상담톡' ? '#3c1e1e' : '#fff';
+    wrap.style.fontWeight = '900';
+    wrap.textContent = CH_FALLBACK[name] ?? name[0];
+  }
+  return wrap;
+}
+
 // ── State ──────────────────────────────────────────────────────────
 let allInquiries = [];
 let activeFilter = 'all';
@@ -335,7 +393,10 @@ async function loadStats() {
   for (const ch of s.channels) {
     const tag = document.createElement('div');
     tag.className = 'ch-tag';
-    tag.textContent = `${ch.name} ${ch.count}`;
+    tag.append(makeChIcon(ch.name, 18));
+    const label = document.createElement('span');
+    label.textContent = `${ch.name} ${ch.count}`;
+    tag.appendChild(label);
     tag.dataset.ch = ch.name;
     tag.onclick = () => filterByChannel(ch.name, tag);
     bar.appendChild(tag);
@@ -344,7 +405,11 @@ async function loadStats() {
 
 // ── Inquiries ──────────────────────────────────────────────────────
 async function loadInquiries() {
-  allInquiries = await fetch('/api/inquiries').then(r => r.json());
+  const resp = await fetch('/api/inquiries?size=200').then(r => r.json());
+  // CSV 모드: { total, page, size, items } / WMS 모드: 배열
+  allInquiries = Array.isArray(resp) ? resp : (resp.items ?? []);
+  const total = Array.isArray(resp) ? resp.length : (resp.total ?? resp.items?.length ?? 0);
+  document.getElementById('inq-count-label').textContent = `전체 ${total.toLocaleString()}건`;
   renderList();
 }
 
@@ -384,7 +449,11 @@ function renderList() {
 
     const sub = document.createElement('div');
     sub.className = 'inq-sub';
-    const ch = document.createElement('span'); ch.textContent = inq.channel;
+    const ch = document.createElement('span');
+    ch.style.cssText = 'display:inline-flex;align-items:center;gap:3px';
+    ch.appendChild(makeChIcon(inq.channel, 13));
+    const chTxt = document.createElement('span'); chTxt.textContent = inq.channel;
+    ch.appendChild(chTxt);
     const meta = document.createElement('span'); meta.textContent = `${inq.customer} · ${inq.time}`;
     sub.append(ch, meta);
 
@@ -513,6 +582,11 @@ function handleEvent(evt, inq) {
       valEl.textContent = evt.tool_result.ok ? '조회 완료 ✓' : '조회 실패 ✗';
       valEl.className = 'v ' + (evt.tool_result.ok ? 'ok' : 'err');
     }
+    // 실제 WMS 응답 데이터로 사이드 패널 업데이트
+    if (evt.tool_result.data) {
+      mergeWmsData(evt.tool_result.name, evt.tool_result.data, inq);
+      renderWmsPanel(currentWmsData);
+    }
   }
 
   if (evt.text) {
@@ -523,7 +597,11 @@ function handleEvent(evt, inq) {
 
   if (evt.done) {
     document.getElementById('draft-spinner').style.display = 'none';
-    renderWmsPanel(buildWmsFromInquiry(inq));
+    // WMS 데이터가 없으면 기본값으로 채움
+    if (!currentWmsData.order) {
+      currentWmsData.order = [['주문번호', inq.orderNo], ['채널', inq.channel], ['유형', inq.type]];
+    }
+    renderWmsPanel(currentWmsData);
   }
 
   if (evt.error) {
@@ -537,14 +615,68 @@ function toolLabel(name) {
            simulate_return: '반품 시뮬레이션', simulate_cancel: '취소 시뮬레이션' }[name] ?? name;
 }
 
-// ── WMS Side Panel ─────────────────────────────────────────────────
-function buildWmsFromInquiry(inq) {
-  return {
-    order:    [['주문번호', inq.orderNo], ['주문일시', inq.received], ['채널', inq.channel], ['유형', inq.type]],
-    stock:    [['상품', '조회 완료'], ['재고 상태', '보유']],
-    delivery: [['배송 상태', 'WMS 조회 결과 참조'], ['택배사', '한진택배']],
-    return:   [['반품 가능', '수령 후 7일 이내'], ['환불 방식', '원결제 수단']],
-  };
+// ── WMS 응답 → 패널 데이터 변환 ────────────────────────────────────
+function mergeWmsData(toolName, data, inq) {
+  if (!currentWmsData.order) {
+    currentWmsData.order = [['주문번호', inq.orderNo], ['채널', inq.channel], ['유형', inq.type]];
+  }
+
+  if (toolName === 'get_order_status' && data.ok !== false) {
+    currentWmsData.order = [
+      ['주문번호', inq.orderNo],
+      ['주문 상태', data.status_text ?? '—'],
+      ['채널', inq.channel],
+      ['배송중지', data.is_stopped ? '⚠ 배송 중지' : '정상'],
+    ];
+    currentWmsData.delivery = [
+      ['운송장번호', data.tracking_no || '발급 전'],
+      ['출고 예정일', data.expected_ship_date || '—'],
+      ['합포 여부', data.is_combined ? '합포' : '단건'],
+    ];
+    // 라인별 상태
+    if (Array.isArray(data.items) && data.items.length) {
+      data.items.forEach((item, i) => {
+        currentWmsData.delivery.push([
+          `상품${i+1} 상태`, item.item_status ?? '—'
+        ]);
+        if (item.delayed) {
+          currentWmsData.delivery.push([`상품${i+1} 지연`, item.delay_until ? `${item.delay_until}까지` : '지연 중']);
+        }
+      });
+    }
+  }
+
+  if (toolName === 'simulate_cancel' && data.ok !== false) {
+    currentWmsData.order = currentWmsData.order || [];
+    currentWmsData.return = [
+      ['전체취소 가능', data.full_cancellable ? '✓ 가능' : '✗ 불가'],
+      ['환불 예정금액', data.refund?.total != null ? `${data.refund.total.toLocaleString()}원` : '—'],
+      ['환불 수단', data.refund_method ?? '—'],
+      ...(data.reason_if_not ? [['불가 사유', data.reason_if_not]] : []),
+    ];
+  }
+
+  if (toolName === 'simulate_return' && data.ok !== false) {
+    currentWmsData.return = [
+      ['반품 가능', data.available ? '✓ 가능' : '✗ 불가'],
+      ['수거 예정일', data.expected_pickup_date ?? '—'],
+      ['환불 예정금액', data.refund?.total != null ? `${data.refund.total.toLocaleString()}원` : '—'],
+      ['VIP 무료반품', data.vip_free_return ? '적용' : '미적용'],
+      ...(data.reason_if_not ? [['불가 사유', data.reason_if_not]] : []),
+    ];
+  }
+
+  if (toolName === 'get_stock' && data.ok !== false) {
+    currentWmsData.stock = [
+      ['상품명', data.items?.[0]?.goods_name ?? '—'],
+    ];
+    (data.items ?? []).forEach(item => {
+      currentWmsData.stock.push([
+        `${item.op1 ?? ''}${item.op2 ? ' '+item.op2 : ''}`.trim() || '기본',
+        item.available > 0 ? `재고 ${item.available}개` : (item.restock_date ? `품절 (${item.restock_date} 입고)` : '품절')
+      ]);
+    });
+  }
 }
 
 function renderWmsPanel(data) {
@@ -594,6 +726,59 @@ document.querySelectorAll('.wms-tab').forEach(tab => {
 });
 
 boot();
+
+// ── 테스트 문의 모달 ──────────────────────────────────────────────
+function openTestModal() {
+  document.getElementById('test-modal').classList.remove('hidden');
+  document.getElementById('test-input').focus();
+}
+function closeTestModal() {
+  document.getElementById('test-modal').classList.add('hidden');
+  document.getElementById('test-input').value = '';
+  document.getElementById('test-orderno').value = '';
+}
+function submitTestInquiry() {
+  const content = document.getElementById('test-input').value.trim();
+  const orderNo = document.getElementById('test-orderno').value.trim() || '미제공';
+  if (!content) { alert('문의 내용을 입력해주세요.'); return; }
+
+  const testInq = {
+    id: 'test-' + Date.now(),
+    type: '테스트 문의',
+    channel: '자사몰',
+    received: new Date().toISOString().slice(0, 10),
+    orderNo,
+    content,
+    urgency: '보통',
+    time: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }),
+    customer: '테스트고객',
+  };
+  closeTestModal();
+  selectInquiry(testInq);
+}
 </script>
+
+<!-- 테스트 문의 모달 -->
+<div id="test-modal" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:999">
+  <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:24px;width:480px;max-width:90vw">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <span style="font-size:15px;font-weight:700;color:var(--text)">⚡ 테스트 문의 입력</span>
+      <button onclick="closeTestModal()" style="background:none;border:none;color:var(--faint);font-size:18px;cursor:pointer">✕</button>
+    </div>
+    <div style="margin-bottom:12px">
+      <label style="font-size:11px;color:var(--faint);display:block;margin-bottom:4px">주문번호 (선택)</label>
+      <input id="test-orderno" placeholder="예: 71957649" style="width:100%;background:var(--card);border:1px solid var(--border2);border-radius:7px;padding:8px 10px;color:var(--text);font-size:13px;outline:none" />
+    </div>
+    <div style="margin-bottom:16px">
+      <label style="font-size:11px;color:var(--faint);display:block;margin-bottom:4px">고객 문의 내용 *</label>
+      <textarea id="test-input" rows="5" placeholder="예: 주문한 상품이 아직 안 왔어요. 배송 현황 확인해주세요." style="width:100%;background:var(--card);border:1px solid var(--border2);border-radius:7px;padding:8px 10px;color:var(--text);font-size:13px;outline:none;resize:vertical;font-family:inherit"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button onclick="closeTestModal()" style="background:var(--card);color:var(--muted);border:1px solid var(--border2);border-radius:7px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer">취소</button>
+      <button onclick="submitTestInquiry()" style="background:var(--rose);color:#fff;border:none;border-radius:7px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer">AI 초안 생성 →</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
