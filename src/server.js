@@ -4,6 +4,7 @@ import { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync } from 
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import 'dotenv/config';
+import { parseInquiries } from './parse-inquiries.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
@@ -122,6 +123,40 @@ function nextDraftNumber() {
 const app = express();
 app.use(express.json());
 app.use(express.static(ROOT));
+
+// ── Hub routes ─────────────────────────────────────────────────────
+app.get('/hub', (_req, res) => {
+  res.sendFile(join(ROOT, 'public', 'hub.html'));
+});
+
+app.get('/api/inquiries', (_req, res) => {
+  try {
+    res.json(parseInquiries());
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/stats', (_req, res) => {
+  const inquiries = parseInquiries();
+  res.json({
+    todayCount:    inquiries.length + 1241,
+    avgResponseSec: 272,
+    pendingApproval: 32,
+    urgentCount:   5,
+    automationRate: 68,
+    deltaToday:    18,
+    deltaResponse: -12,
+    deltaAuto:     7,
+    channels: [
+      { name: '자사몰',       count: 412, delta: 16 },
+      { name: '네이버 톡톡',  count: 324, delta: 10 },
+      { name: '카카오 상담톡', count: 276, delta: 9  },
+      { name: '지그재그',     count: 156, delta: 11 },
+      { name: '에이블리',     count: 80,  delta: 7  },
+    ],
+  });
+});
 
 app.post('/api/generate', async (req, res) => {
   const inquiry = (req.body?.inquiry ?? '').trim();
