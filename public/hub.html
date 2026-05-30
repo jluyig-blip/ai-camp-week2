@@ -149,6 +149,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Pretendard','App
 .flow-label { font-size:8px;color:var(--faint); }
 .flow-arr { color:var(--border2);font-size:10px; }
 .plan-box { margin-top:8px;background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.15);border-radius:4px;padding:6px;font-size:9px;color:var(--green); }
+#detail-content { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
 </style>
 </head>
 <body>
@@ -235,7 +236,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Pretendard','App
         <div class="placeholder-panel" id="detail-placeholder">
           문의를 선택하면 AI 답변 초안이 생성됩니다
         </div>
-        <div id="detail-content" class="hidden" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+        <div id="detail-content" class="hidden">
           <div class="detail-header">
             <div class="detail-title-row">
               <span class="urg" id="d-urgency"></span>
@@ -296,12 +297,16 @@ let allInquiries = [];
 let activeFilter = 'all';
 let activeSearch = '';
 let selectedInquiry = null;
+let currentAbort = null;
 let currentWmsData = {};
 let activeWmsTab = 'order';
 
 // ── Boot ───────────────────────────────────────────────────────────
 async function boot() {
-  await Promise.all([loadStats(), loadInquiries()]);
+  await Promise.all([
+    loadStats().catch(err => console.error('stats 로드 실패:', err)),
+    loadInquiries().catch(err => console.error('문의 로드 실패:', err)),
+  ]);
 }
 
 // ── Stats / KPI ────────────────────────────────────────────────────
@@ -367,15 +372,23 @@ function renderList() {
   for (const inq of items) {
     const el = document.createElement('div');
     el.className = 'inq-item' + (selectedInquiry?.id === inq.id ? ' active' : '');
-    el.innerHTML = `
-      <div class="row1">
-        <span class="urg urg-${inq.urgency}">${inq.urgency}</span>
-        <span class="inq-title">${inq.type}</span>
-      </div>
-      <div class="inq-sub">
-        <span>${inq.channel}</span>
-        <span>${inq.customer} · ${inq.time}</span>
-      </div>`;
+    const row1 = document.createElement('div');
+    row1.className = 'row1';
+    const urgSpan = document.createElement('span');
+    urgSpan.className = `urg urg-${inq.urgency}`;
+    urgSpan.textContent = inq.urgency;
+    const titleSpan = document.createElement('span');
+    titleSpan.className = 'inq-title';
+    titleSpan.textContent = inq.type;
+    row1.append(urgSpan, titleSpan);
+
+    const sub = document.createElement('div');
+    sub.className = 'inq-sub';
+    const ch = document.createElement('span'); ch.textContent = inq.channel;
+    const meta = document.createElement('span'); meta.textContent = `${inq.customer} · ${inq.time}`;
+    sub.append(ch, meta);
+
+    el.append(row1, sub);
     el.onclick = () => selectInquiry(inq);
     scroll.appendChild(el);
   }
@@ -399,7 +412,6 @@ function showDetailShell(inq) {
   document.getElementById('detail-placeholder').classList.add('hidden');
   const dc = document.getElementById('detail-content');
   dc.classList.remove('hidden');
-  dc.style.display = 'flex';
 
   document.getElementById('d-urgency').className = `urg urg-${inq.urgency}`;
   document.getElementById('d-urgency').textContent = inq.urgency;
@@ -440,6 +452,9 @@ function generateDraft(inq) {
 }
 
 async function fetchSSE(url, inquiry, inq) {
+  if (currentAbort) currentAbort.abort();
+  currentAbort = new AbortController();
+  const signal = currentAbort.signal;
   const draftStatus = document.getElementById('draft-status');
   const spinner = document.getElementById('draft-spinner');
 
@@ -448,6 +463,7 @@ async function fetchSSE(url, inquiry, inq) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ inquiry }),
+      signal,
     });
 
     const reader = resp.body.getReader();
@@ -470,6 +486,7 @@ async function fetchSSE(url, inquiry, inq) {
       }
     }
   } catch (err) {
+    if (err.name === 'AbortError') return;
     draftStatus.textContent = '⚠ 생성 오류: ' + err.message;
     spinner.style.display = 'none';
   }
