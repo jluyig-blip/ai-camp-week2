@@ -11,6 +11,13 @@ const CHANNEL_URGENCY = {
   '반품': '보통', '출고 지연': '긴급', '사이즈': '보통', '배송일': '보통',
 };
 
+function resolveUrgency(type) {
+  const exact = CHANNEL_URGENCY[type];
+  if (exact) return exact;
+  const matched = Object.keys(CHANNEL_URGENCY).find(key => type.includes(key));
+  return matched ? CHANNEL_URGENCY[matched] : '보통';
+}
+
 export function parseInquiries() {
   const md = readFileSync(join(ROOT, 'golden', 'input-example.md'), 'utf8');
   const sections = md.split(/^## /m).filter(s => s.trim());
@@ -31,7 +38,7 @@ export function parseInquiries() {
     const contentLine = lines.find(l => l.startsWith('>'));
     const content  = contentLine?.replace(/^>\s*"?/, '').replace(/"?$/, '').trim() ?? '';
 
-    const urgency = CHANNEL_URGENCY[type] ?? '보통';
+    const urgency = resolveUrgency(type);
     const time = received.split(' ')[1] ?? '00:00';
     const customer = `고객${id}`;
 

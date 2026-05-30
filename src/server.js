@@ -137,6 +137,7 @@ app.get('/api/inquiries', (_req, res) => {
   }
 });
 
+// TODO: 실제 DB/WMS 연동 전 mock 수치 — hub 대시보드 데모용
 app.get('/api/stats', (_req, res) => {
   const inquiries = parseInquiries();
   res.json({
