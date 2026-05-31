@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>개발팀 API 요청서 — 아뜨랑스 CS 자동응답</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; font-size: 14px; color: #1a1a2e; background: #f8f9fc; line-height: 1.7; }
+
+  .header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #fff; padding: 40px 48px 36px; }
+  .header .badge { display: inline-block; background: #e94560; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-bottom: 14px; letter-spacing: .5px; }
+  .header h1 { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+  .header .meta { font-size: 13px; color: #94a3b8; display: flex; gap: 24px; flex-wrap: wrap; margin-top: 12px; }
+  .header .meta span::before { content: '• '; }
+
+  .container { max-width: 860px; margin: 0 auto; padding: 36px 24px 60px; }
+
+  .section { background: #fff; border-radius: 12px; padding: 28px 32px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+  .section h2 { font-size: 17px; font-weight: 700; color: #1a1a2e; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+  .section h2 .tag { background: #e94560; color: #fff; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 700; }
+  .section h3 { font-size: 14px; font-weight: 700; color: #334155; margin: 20px 0 10px; }
+
+  .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 16px 0; }
+  .info-card { background: #f1f5f9; border-radius: 8px; padding: 12px 14px; }
+  .info-card .label { font-size: 11px; color: #64748b; margin-bottom: 4px; }
+  .info-card .value { font-size: 13px; font-weight: 600; color: #1e293b; }
+
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+  th { background: #f1f5f9; text-align: left; padding: 9px 12px; font-weight: 700; color: #475569; border-bottom: 2px solid #e2e8f0; }
+  td { padding: 9px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .req { color: #e94560; font-weight: 700; font-size: 12px; }
+  .opt { color: #94a3b8; font-size: 12px; }
+
+  pre { background: #0f172a; color: #e2e8f0; border-radius: 8px; padding: 16px 18px; overflow-x: auto; font-size: 12.5px; line-height: 1.6; margin: 12px 0; font-family: 'JetBrains Mono', 'Consolas', monospace; }
+  .key   { color: #7dd3fc; }
+  .str   { color: #86efac; }
+  .num   { color: #fbbf24; }
+  .bool  { color: #f472b6; }
+  .cmt   { color: #64748b; }
+
+  .endpoint { display: inline-flex; align-items: center; gap: 8px; background: #0f172a; color: #e2e8f0; padding: 6px 14px; border-radius: 6px; font-family: monospace; font-size: 13px; margin-bottom: 12px; }
+  .endpoint .method { background: #e94560; color: #fff; padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+
+  .flow { display: flex; align-items: center; gap: 0; flex-wrap: wrap; margin: 16px 0; }
+  .flow-step { background: #f1f5f9; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px 16px; font-size: 13px; font-weight: 600; color: #334155; text-align: center; min-width: 120px; }
+  .flow-step .sub { font-size: 10px; color: #94a3b8; font-weight: 400; margin-top: 2px; }
+  .flow-arrow { color: #94a3b8; font-size: 18px; padding: 0 8px; }
+  .flow-step.highlight { background: #fef2f2; border-color: #e94560; color: #e94560; }
+
+  .priority-table tr:nth-child(1) td:first-child { font-weight: 700; color: #e94560; }
+  .priority-table tr:nth-child(2) td:first-child { font-weight: 700; color: #f59e0b; }
+
+  .callout { background: #fef9ec; border-left: 4px solid #f59e0b; border-radius: 0 8px 8px 0; padding: 12px 16px; font-size: 13px; color: #78350f; margin: 14px 0; }
+  .callout strong { color: #92400e; }
+
+  .env-box { background: #0f172a; color: #e2e8f0; border-radius: 8px; padding: 14px 18px; font-family: monospace; font-size: 13px; margin: 12px 0; }
+  .env-box .comment { color: #64748b; }
+  .env-box .key2 { color: #7dd3fc; }
+  .env-box .val { color: #86efac; }
+
+  .priority-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+  .p1 { background: #fee2e2; color: #e94560; }
+  .p2 { background: #fef3c7; color: #d97706; }
+
+  @media print {
+    body { background: #fff; }
+    .section { box-shadow: none; border: 1px solid #e2e8f0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="badge">개발팀 API 요청</div>
+  <h1>CS 자동응답 — WMS 연동 API 2종</h1>
+  <div class="meta">
+    <span>요청자: 정기열 (CS 운영팀)</span>
+    <span>작성일: 2026-05-31</span>
+    <span>Base URL: attrangs.co.kr/api/cs/</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 배경 -->
+  <div class="section">
+    <h2>📋 요청 배경</h2>
+    <p style="color:#475569;margin-bottom:16px">현재 CS AI 자동응답 시스템에 아래 4개 WMS API가 이미 연동되어 있습니다. AI가 주문 데이터를 조회하고 답변 초안을 자동 생성하는 기능은 완성된 상태입니다.</p>
+    <div class="info-grid">
+      <div class="info-card"><div class="label">✅ 완료</div><div class="value">stock.php<br><span style="font-size:11px;font-weight:400;color:#64748b">재고 조회</span></div></div>
+      <div class="info-card"><div class="label">✅ 완료</div><div class="value">order_status.php<br><span style="font-size:11px;font-weight:400;color:#64748b">주문 상태 조회</span></div></div>
+      <div class="info-card"><div class="label">✅ 완료</div><div class="value">return.php<br><span style="font-size:11px;font-weight:400;color:#64748b">반품 시뮬레이션</span></div></div>
+      <div class="info-card"><div class="label">✅ 완료</div><div class="value">cancel.php<br><span style="font-size:11px;font-weight:400;color:#64748b">취소 시뮬레이션</span></div></div>
+    </div>
+    <div class="callout">
+      <strong>추가 필요:</strong> AI가 생성한 답변을 WMS로 전송하고, 미답변 문의를 자동으로 가져오는 API 2개가 없어서 현재 수동 복붙이 필요한 상황입니다.
+    </div>
+
+    <h3>완성 후 전체 플로우</h3>
+    <div class="flow">
+      <div class="flow-step highlight">qna_list.php<div class="sub">미답변 문의 수신</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">order_status.php<div class="sub">WMS 데이터 조회</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">Claude AI<div class="sub">답변 초안 생성</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">담당자 검수<div class="sub">허브 대시보드</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step highlight">qna_reply.php<div class="sub">WMS 답변 전송</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">고객 수신<div class="sub">전채널 자동</div></div>
+    </div>
+  </div>
+
+  <!-- API 1 -->
+  <div class="section">
+    <h2><span class="tag">API 1 — 1순위</span> 미답변 문의 목록 조회</h2>
+    <div class="endpoint"><span class="method">POST</span>/api/cs/qna_list.php</div>
+
+    <p style="color:#475569;margin-bottom:16px">자사몰·스마트스토어·네이버톡톡·카카오상담톡·지그재그·에이블리 <strong>전 채널</strong>의 미답변 문의를 가져옵니다.</p>
+
+    <h3>요청 파라미터</h3>
+    <table>
+      <tr><th>파라미터</th><th>필수</th><th>설명</th><th>예시</th></tr>
+      <tr><td><code>status</code></td><td><span class="opt">선택</span></td><td>미답변(기본값: <code>unanswered</code>) / 전체(<code>all</code>) / 답변완료(<code>answered</code>)</td><td><code>unanswered</code></td></tr>
+      <tr><td><code>channel</code></td><td><span class="opt">선택</span></td><td>채널 필터. 생략 시 전체 채널</td><td><code>지그재그</code></td></tr>
+      <tr><td><code>limit</code></td><td><span class="opt">선택</span></td><td>건수 (기본 50, 최대 200)</td><td><code>100</code></td></tr>
+      <tr><td><code>offset</code></td><td><span class="opt">선택</span></td><td>페이징 오프셋</td><td><code>0</code></td></tr>
+      <tr><td><code>date_from</code></td><td><span class="opt">선택</span></td><td>시작일 YYYY-MM-DD</td><td><code>2026-05-24</code></td></tr>
+      <tr><td><code>date_to</code></td><td><span class="opt">선택</span></td><td>종료일 YYYY-MM-DD</td><td><code>2026-05-31</code></td></tr>
+    </table>
+
+    <h3>응답 예시</h3>
+<pre>{
+  <span class="key">"ok"</span>: <span class="bool">true</span>,
+  <span class="key">"total"</span>: <span class="num">342</span>,       <span class="cmt">// 전체 미답변 건수</span>
+  <span class="key">"items"</span>: [
+    {
+      <span class="key">"qna_idx"</span>:       <span class="num">1877862</span>,          <span class="cmt">// 문의 고유번호 (답변 전송 시 사용)</span>
+      <span class="key">"channel"</span>:       <span class="str">"자사몰"</span>,           <span class="cmt">// 자사몰 | 스마트스토어 | 네이버 톡톡 | 카카오 상담톡 | 지그재그 | 에이블리</span>
+      <span class="key">"market_idx"</span>:    <span class="str">"71957649"</span>,        <span class="cmt">// 주문번호 (없으면 "")</span>
+      <span class="key">"subject"</span>:       <span class="str">"반품비 문의"</span>,
+      <span class="key">"content"</span>:       <span class="str">"반품 신청했는데 반품비가 얼마인가요?"</span>,
+      <span class="key">"customer_name"</span>: <span class="str">"강송희"</span>,
+      <span class="key">"created_at"</span>:    <span class="str">"2026-05-30 10:23:00"</span>,
+      <span class="key">"status"</span>:        <span class="str">"unanswered"</span>,
+      <span class="key">"is_urgent"</span>:     <span class="bool">false</span>
+    }
+  ]
+}</pre>
+  </div>
+
+  <!-- API 2 -->
+  <div class="section">
+    <h2><span class="tag">API 2 — 2순위</span> AI 답변 전송</h2>
+    <div class="endpoint"><span class="method">POST</span>/api/cs/qna_reply.php</div>
+
+    <p style="color:#475569;margin-bottom:16px">AI가 생성한 답변을 WMS에 등록합니다. <code>auto_send=0</code>이면 저장만, <code>auto_send=1</code>이면 고객에게 즉시 발송합니다.</p>
+
+    <h3>요청 파라미터</h3>
+    <table>
+      <tr><th>파라미터</th><th>필수</th><th>설명</th><th>예시</th></tr>
+      <tr><td><code>qna_idx</code></td><td><span class="req">필수</span></td><td>답변할 문의 번호 (<code>qna_list</code> 응답의 <code>qna_idx</code>)</td><td><code>1877862</code></td></tr>
+      <tr><td><code>reply</code></td><td><span class="req">필수</span></td><td>답변 본문 전체</td><td><code>안녕하세요, ATTRANGS 입니다~♡ ...</code></td></tr>
+      <tr><td><code>auto_send</code></td><td><span class="opt">선택</span></td><td><code>0</code> = 저장만(기본), <code>1</code> = 즉시 발송</td><td><code>0</code></td></tr>
+      <tr><td><code>ai_generated</code></td><td><span class="opt">선택</span></td><td>AI 생성 여부 표시 (감사 추적용) <code>1</code>/<code>0</code></td><td><code>1</code></td></tr>
+      <tr><td><code>model_id</code></td><td><span class="opt">선택</span></td><td>사용 AI 모델명 (로그용)</td><td><code>claude-sonnet-4-6</code></td></tr>
+    </table>
+
+    <h3>응답 예시 — 저장 성공</h3>
+<pre>{
+  <span class="key">"ok"</span>:      <span class="bool">true</span>,
+  <span class="key">"qna_idx"</span>: <span class="num">1877862</span>,
+  <span class="key">"status"</span>:  <span class="str">"saved"</span>,     <span class="cmt">// saved | sent</span>
+  <span class="key">"sent_at"</span>: <span class="bool">null</span>        <span class="cmt">// auto_send=1 이면 발송 시각</span>
+}</pre>
+
+    <h3>응답 예시 — 이미 답변됨 (오류)</h3>
+<pre>{
+  <span class="key">"ok"</span>:   <span class="bool">false</span>,
+  <span class="key">"code"</span>: <span class="str">"already_answered"</span>,
+  <span class="key">"msg"</span>:  <span class="str">"이미 답변이 등록된 문의입니다"</span>
+}</pre>
+  </div>
+
+  <!-- 공통 사항 -->
+  <div class="section">
+    <h2>🔑 공통 사항 (기존 API와 동일)</h2>
+    <table>
+      <tr><th>항목</th><th>값</th></tr>
+      <tr><td>Base URL</td><td><code>https://attrangs.co.kr/api/cs/</code></td></tr>
+      <tr><td>메서드</td><td>POST만 허용 (GET 사용 시 405 반환)</td></tr>
+      <tr><td>Content-Type</td><td><code>application/x-www-form-urlencoded</code></td></tr>
+      <tr><td>인증</td><td>헤더: <code>X-API-Key: attrangs-cs-test-2026-may</code></td></tr>
+      <tr><td>응답 형식</td><td><code>{"ok": true, ...}</code> / <code>{"ok": false, "code": "...", "msg": "..."}</code></td></tr>
+    </table>
+  </div>
+
+  <!-- 우선순위 -->
+  <div class="section">
+    <h2>⚡ 우선순위 및 일정</h2>
+    <table class="priority-table">
+      <tr><th>순서</th><th>API</th><th>이유</th></tr>
+      <tr>
+        <td><span class="priority-badge p1">1순위</span></td>
+        <td><code>qna_list.php</code></td>
+        <td>없으면 미답변 문의를 자동으로 가져올 수 없어 전체 자동화 불가</td>
+      </tr>
+      <tr>
+        <td><span class="priority-badge p2">2순위</span></td>
+        <td><code>qna_reply.php</code></td>
+        <td>없으면 AI 답변을 수동 복붙해야 함 (작업 시간 단축 불가)</td>
+      </tr>
+    </table>
+
+    <div class="callout" style="margin-top:16px">
+      <strong>연동 방법:</strong> 구현 완료 후 서버 환경변수 2줄만 추가하면 즉시 연동됩니다. 별도 코드 수정 불필요.
+    </div>
+
+    <div class="env-box">
+      <span class="comment"># .env 에 추가</span><br>
+      <span class="key2">WMS_QNA_URL</span>=<span class="val">https://attrangs.co.kr/api/cs/qna_list.php</span><br>
+      <span class="key2">WMS_QNA_REPLY_URL</span>=<span class="val">https://attrangs.co.kr/api/cs/qna_reply.php</span>
+    </div>
+  </div>
+
+  <p style="text-align:center;color:#94a3b8;font-size:12px;margin-top:24px">
+    문의: 정기열 (luyig@attrangs.co.kr) &nbsp;·&nbsp; CS 자동응답 시스템 v0.1
+  </p>
+
+</div>
+</body>
+</html>

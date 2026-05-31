@@ -32,7 +32,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Pretendard','App
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
 /* SHELL */
-.shell { display: flex; flex: 1; overflow: hidden; }
+.shell { display: flex; flex: 1; overflow: hidden; min-height: 0; }
 
 /* SIDEBAR */
 .sidebar { width: 192px; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
@@ -50,7 +50,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Pretendard','App
 .report-link { font-size: 12px; color: var(--rose); margin-top: 8px; cursor: pointer; }
 
 /* MAIN */
-.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
 
 /* KPI BAR */
 .kpi-bar { display: grid; grid-template-columns: repeat(4,1fr); background: var(--bg2); border-bottom: 1px solid var(--border); flex-shrink: 0; }
@@ -77,10 +77,10 @@ body { background: var(--bg); color: var(--text); font-family: 'Pretendard','App
 .ch-icon-inq { width:15px;height:15px;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex-shrink:0; }
 
 /* 3-PANEL */
-.panels { flex: 1; display: grid; grid-template-columns: 240px 1fr 280px; overflow: hidden; }
+.panels { flex: 1; display: grid; grid-template-columns: 240px 1fr 280px; overflow: hidden; min-height: 0; }
 
 /* INQUIRY LIST */
-.inq-list { background: var(--bg3); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+.inq-list { background: var(--bg3); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
 .inq-search { padding: 10px 12px; border-bottom: 1px solid var(--border); }
 .inq-search input { width:100%;background:var(--card);border:1px solid var(--border2);border-radius:7px;padding:7px 10px;color:var(--text);font-size:13px;outline:none; }
 .inq-search input::placeholder { color: var(--faint); }
@@ -99,15 +99,15 @@ body { background: var(--bg); color: var(--text); font-family: 'Pretendard','App
 .inq-more { padding: 10px; text-align:center; font-size:12px; color:var(--sky); cursor:pointer; border-top:1px solid var(--border); }
 
 /* DETAIL */
-.detail { display:flex;flex-direction:column;overflow:hidden;background:var(--bg); }
+.detail { display:flex;flex-direction:column;overflow:hidden;background:var(--bg);min-height:0; }
 .detail-header { padding: 12px 16px; border-bottom:1px solid var(--border); }
 .detail-title-row { display:flex;align-items:center;gap:8px;margin-bottom:4px; }
 .detail-title { font-size:15px;font-weight:600; }
 .detail-meta  { font-size:12px;color:var(--faint); }
 .detail-actions-top { display:flex;gap:6px;margin-top:8px; }
-.detail-body { flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:10px; }
-.customer-bubble { background:var(--card);border-radius:8px;padding:12px;font-size:13px;color:var(--muted);line-height:1.75; }
-.wms-result-box { background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px 12px; }
+.detail-body { flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:10px;min-height:0; }
+.customer-bubble { background:var(--card);border-radius:8px;padding:12px;font-size:13px;color:var(--muted);line-height:1.75;flex-shrink:0; }
+.wms-result-box { background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;flex-shrink:0; }
 .wms-result-box .wms-rtitle { color:var(--sky);font-weight:600;font-size:12px;margin-bottom:8px;display:flex;align-items:center;gap:6px; }
 .wms-row { display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(30,41,59,.4); }
 .wms-row:last-child { border-bottom:none; }
@@ -116,11 +116,16 @@ body { background: var(--bg); color: var(--text); font-family: 'Pretendard','App
 .wms-row .v.ok   { color:var(--green); }
 .wms-row .v.warn { color:var(--amber); }
 .wms-row .v.err  { color:var(--rose);  }
-.draft-box { background:#0f2942;border:1px solid rgba(29,78,216,.4);border-radius:8px;overflow:hidden; }
+.draft-box { background:#0f2942;border:1px solid rgba(29,78,216,.4);border-radius:8px;overflow:hidden;flex-shrink:0; }
 .draft-head { background:rgba(29,78,216,.15);padding:8px 12px;font-size:12px;color:#60a5fa;display:flex;align-items:center;gap:6px; }
 .draft-spinner { width:11px;height:11px;border:2px solid rgba(59,130,246,.2);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite; }
 @keyframes spin { to { transform:rotate(360deg); } }
-.draft-body { padding:12px;font-size:13px;color:#cbd5e1;line-height:1.8;min-height:60px;white-space:pre-wrap; }
+.draft-body { padding:12px;font-size:13px;color:#cbd5e1;line-height:1.8;min-height:60px;white-space:pre-wrap;max-height:340px;overflow-y:auto; }
+.draft-body[contenteditable="true"] { background:rgba(255,255,255,.04);outline:2px solid var(--sky);border-radius:4px;cursor:text; }
+.draft-send-label { font-size:10px;color:var(--sky);padding:4px 12px 0;font-weight:700;letter-spacing:.5px; }
+.draft-internal { background:rgba(0,0,0,.2);border-top:1px solid rgba(29,78,216,.2); }
+.draft-internal-label { font-size:10px;color:var(--faint);padding:6px 12px 2px;font-weight:700;letter-spacing:.5px; }
+.draft-internal-body { padding:8px 12px 10px;font-size:12px;color:var(--faint);line-height:1.6;white-space:pre-wrap;max-height:120px;overflow-y:auto; }
 .placeholder-panel { flex:1;display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:14px; }
 .action-bar { padding:10px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0; }
 .btn { padding:7px 14px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;border:none; }
@@ -132,7 +137,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Pretendard','App
 .hidden { display:none!important; }
 
 /* WMS SIDE PANEL */
-.wms-panel { background:var(--bg3);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden; }
+.wms-panel { background:var(--bg3);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;min-height:0; }
 .wms-conn { padding:7px 12px;font-size:12px;color:var(--green);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px; }
 .wms-conn .dot { width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite; }
 .wms-tabs { display:flex;border-bottom:1px solid var(--border); }
@@ -156,7 +161,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Pretendard','App
 .flow-label { font-size:10px;color:var(--faint); }
 .flow-arr { color:var(--border2);font-size:12px; }
 .plan-box { margin-top:10px;background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.15);border-radius:4px;padding:8px;font-size:11px;color:var(--green); }
-#detail-content { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+#detail-content { display: flex; flex-direction: column; flex: 1; overflow: hidden; min-height: 0; }
 </style>
 </head>
 <body>
@@ -269,13 +274,18 @@ body { background: var(--bg); color: var(--text); font-family: 'Pretendard','App
                 <div class="draft-spinner" id="draft-spinner"></div>
                 <span id="draft-status">✨ AI 답변 초안 생성 중...</span>
               </div>
+              <div class="draft-send-label">📤 고객 전송 내용</div>
               <div class="draft-body" id="draft-body"></div>
+              <div class="draft-internal" id="draft-internal" style="display:none">
+                <div class="draft-internal-label">🔒 내부 참고 (전송 안 됨)</div>
+                <div class="draft-internal-body" id="draft-internal-body"></div>
+              </div>
             </div>
           </div>
           <div class="action-bar">
-            <button class="btn btn-approve">✓ 검수 후 승인</button>
-            <button class="btn btn-edit">✏ 수정</button>
-            <button class="btn btn-hold">⏸ 보류</button>
+            <button class="btn btn-approve" id="btn-approve" onclick="approveDraft()">✓ 검수 후 승인</button>
+            <button class="btn btn-edit" id="btn-edit" onclick="toggleEdit()">✏ 수정</button>
+            <button class="btn btn-hold" onclick="holdDraft()">⏸ 보류</button>
             <button class="btn btn-no-auto">✕ 자동 발송 아님</button>
           </div>
         </div>
@@ -597,6 +607,7 @@ function handleEvent(evt, inq) {
 
   if (evt.done) {
     document.getElementById('draft-spinner').style.display = 'none';
+    parseDraftSections();
     // WMS 데이터가 없으면 기본값으로 채움
     if (!currentWmsData.order) {
       currentWmsData.order = [['주문번호', inq.orderNo], ['채널', inq.channel], ['유형', inq.type]];
@@ -608,6 +619,71 @@ function handleEvent(evt, inq) {
     document.getElementById('draft-status').textContent = '⚠ ' + evt.error;
     document.getElementById('draft-spinner').style.display = 'none';
   }
+}
+
+// ── 답변 파싱: 고객 전송 부분 vs 내부 참고 분리 ─────────────────
+function parseDraftSections() {
+  const full = document.getElementById('draft-body').textContent;
+  if (!full.trim()) return;
+
+  // [1차 답변 초안] 섹션 추출
+  const sendMatch = full.match(/\[1차 답변 초안\]\s*([\s\S]*?)(?:\[담당자 메모\]|$)/i);
+  // [담당자 메모] 섹션 추출
+  const memoMatch = full.match(/\[담당자 메모\]\s*([\s\S]*?)$/i);
+  // [채널] 헤더 + [WMS 조회 결과] = 내부용
+  const headerMatch = full.match(/^([\s\S]*?)(?:\[1차 답변 초안\])/i);
+
+  if (sendMatch) {
+    document.getElementById('draft-body').textContent = sendMatch[1].trim();
+    const internal = [
+      headerMatch ? headerMatch[1].trim() : '',
+      memoMatch   ? '[담당자 메모]\n' + memoMatch[1].trim() : '',
+    ].filter(Boolean).join('\n\n');
+    if (internal) {
+      document.getElementById('draft-internal').style.display = '';
+      document.getElementById('draft-internal-body').textContent = internal;
+    }
+  }
+}
+
+// ── 수정 모드 토글 ────────────────────────────────────────────────
+function toggleEdit() {
+  const body = document.getElementById('draft-body');
+  const btn  = document.getElementById('btn-edit');
+  if (body.contentEditable === 'true') {
+    body.contentEditable = 'false';
+    btn.textContent = '✏ 수정';
+    btn.style.background = '';
+    btn.style.color = '';
+    btn.style.borderColor = '';
+  } else {
+    body.contentEditable = 'true';
+    body.focus();
+    // 커서 끝으로
+    const range = document.createRange();
+    range.selectNodeContents(body);
+    range.collapse(false);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    btn.textContent = '💾 저장';
+    btn.style.background = 'var(--sky)';
+    btn.style.color = '#0f172a';
+    btn.style.borderColor = 'var(--sky)';
+  }
+}
+
+function approveDraft() {
+  // 수정 모드이면 먼저 저장
+  const body = document.getElementById('draft-body');
+  if (body.contentEditable === 'true') toggleEdit();
+  // TODO: WMS qna_reply.php 연동 후 자동 전송
+  document.getElementById('btn-approve').textContent = '✅ 승인 완료';
+  document.getElementById('btn-approve').style.background = 'var(--faint)';
+  document.getElementById('btn-approve').disabled = true;
+}
+
+function holdDraft() {
+  document.getElementById('draft-status').textContent = '⏸ 보류 처리됨';
 }
 
 function toolLabel(name) {
